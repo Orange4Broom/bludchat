@@ -1,4 +1,3 @@
-// firebase/firebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   initializeFirestore,
@@ -6,7 +5,7 @@ import {
   persistentMultipleTabManager,
 } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getStorage } from "firebase/storage"; // Import getStorage
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_-1PIaUtbVVUDewaEw137rg0UcHxARe8",
@@ -20,7 +19,6 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firestore with additional settings
 const firestore = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager(),
@@ -29,6 +27,6 @@ const firestore = initializeFirestore(app, {
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-const storage = getStorage(app); // Initialize storage
+const storage = getStorage(app);
 
-export { app, firestore, auth, provider, storage, firebaseConfig }; // Export storage
+export { app, firestore, auth, provider, storage, firebaseConfig };

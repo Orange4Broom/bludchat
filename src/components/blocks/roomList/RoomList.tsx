@@ -1,14 +1,15 @@
-// src/components/RoomList.tsx
 import React, { useState, useEffect } from "react";
-import { firestore } from "../../../firebase/firebase";
 import {
+  getFirestore,
   collection,
   onSnapshot,
-  addDoc,
-  serverTimestamp,
   DocumentData,
   QuerySnapshot,
+  query,
+  where,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { DeleteRoomButton } from "../../elements/deleteRoomButton/DeleteRoomButton";
 
 interface RoomListProps {
   onRoomSelect: (roomId: string | null) => void;
@@ -18,16 +19,23 @@ interface Room {
   id: string;
   name: string;
   createdAt: unknown;
+  creatorId: string;
+  members: string[];
 }
 
 export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [newRoomName, setNewRoomName] = useState("");
+  const firestore = getFirestore();
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   useEffect(() => {
+    if (!user) return;
+
     const roomsRef = collection(firestore, "rooms");
+    const q = query(roomsRef, where("members", "array-contains", user.uid));
     const unsubscribe = onSnapshot(
-      roomsRef,
+      q,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const data = snapshot.docs.map((doc) => ({
           ...doc.data(),
@@ -38,34 +46,16 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
     );
 
     return () => unsubscribe();
-  }, []);
-
-  const createRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await addDoc(collection(firestore, "rooms"), {
-      name: newRoomName,
-      createdAt: serverTimestamp(),
-    });
-    setNewRoomName("");
-  };
+  }, [firestore, user]);
 
   return (
     <div>
-      <form onSubmit={createRoom}>
-        <input
-          value={newRoomName}
-          onChange={(e) => setNewRoomName(e.target.value)}
-          placeholder="New room name"
-        />
-        <button type="submit">Create Room</button>
-      </form>
-      <>
-        {rooms.map((room) => (
-          <button key={room.id} onClick={() => onRoomSelect(room.name)}>
-            {room.name}
-          </button>
-        ))}
-      </>
+      {rooms.map((room) => (
+        <div key={room.id}>
+          <button onClick={() => onRoomSelect(room.id)}>{room.name}</button>
+          <DeleteRoomButton roomId={room.id} />
+        </div>
+      ))}
     </div>
   );
 };

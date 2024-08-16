@@ -1,4 +1,3 @@
-// src/components/elements/logout/Logout.tsx
 import React from "react";
 
 interface LogoutProps {

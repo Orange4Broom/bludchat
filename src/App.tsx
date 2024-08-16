@@ -1,19 +1,39 @@
-// src/App.tsx
-import React, { useEffect, useState } from "react";
-import { GoogleSignIn } from "./components/elements/googleSignIn/GoogleSignIn";
-import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
+import { useEffect, useState } from "react";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { auth } from "./firebase/firebase"; // Adjust the import according to your project structure
+import { CreateRoom } from "./components/elements/createRoom/CreateRoom";
 import { RoomList } from "./components/blocks/roomList/RoomList";
-import { auth } from "./firebase/firebase";
-import { User } from "firebase/auth";
+import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
 import { Logout } from "./components/elements/logout/Logout";
+import { GoogleSignIn } from "./components/elements/googleSignIn/GoogleSignIn";
+import { User } from "firebase/auth"; // Import User type from Firebase
+import { FriendList } from "./components/blocks/friendList/FriendList";
+import { AddFriend } from "./components/blocks/friendList/AddFriend";
 
-export const App: React.FC = () => {
+export const App = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
+  const [oneOnOneChatUser, setOneOnOneChatUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
-      setUser(user);
+    const unsubscribe = auth.onAuthStateChanged(async (user: User | null) => {
+      if (user) {
+        const db = getFirestore();
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+          await setDoc(userRef, {
+            id: user.uid,
+            name: user.displayName || "Anonymous",
+            email: user.email,
+          });
+        }
+
+        setUser(user);
+      } else {
+        setUser(null);
+      }
     });
     return unsubscribe;
   }, []);
@@ -22,15 +42,26 @@ export const App: React.FC = () => {
     await auth.signOut();
     setUser(null);
     setCurrentRoomId(null);
-    localStorage.clear(); // Clear local storage to ensure no cached state
+    setOneOnOneChatUser(null);
+    localStorage.clear();
   };
 
   return (
     <div>
       {user ? (
         <>
+          <h2>User Id {user.uid}</h2>
+          <CreateRoom />
           <RoomList onRoomSelect={setCurrentRoomId} />
           {currentRoomId && <ChatRoom roomId={currentRoomId} />}
+
+          {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
+          <FriendList
+            inRoom={false}
+            userId={user.uid}
+            userName={user.displayName || "User"}
+          />
+          <AddFriend />
           <Logout onLogout={handleLogout} />
         </>
       ) : (

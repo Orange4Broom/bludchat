@@ -12,9 +12,10 @@ import {
 import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../../firebase/firebase"; // Ensure this path is correct
+import { firebaseConfig } from "../../../firebase/firebase";
+import { AddUserToRoom } from "../addUserToRoom/AddUserToRoom";
+import { UsersRoomList } from "../userRoomList/UsersRoomList";
 
-// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const auth = getAuth(app);
@@ -128,6 +129,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           }
         }}
       />
+      <AddUserToRoom roomId={roomId} />
+      <UsersRoomList roomId={roomId} />
     </div>
   );
 };
