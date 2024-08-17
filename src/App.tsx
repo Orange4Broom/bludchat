@@ -46,15 +46,24 @@ export const App = () => {
     localStorage.clear();
   };
 
+  const handleCloseChatRoom = () => {
+    setCurrentRoomId(null);
+  };
+
   return (
     <div>
       {user ? (
         <>
-          <h2>User Id {user.uid}</h2>
+          <h2>User: {user.displayName}</h2>
+          <h2>User Id: {user.uid}</h2>
           <CreateRoom />
           <RoomList onRoomSelect={setCurrentRoomId} />
-          {currentRoomId && <ChatRoom roomId={currentRoomId} />}
-
+          {currentRoomId && (
+            <>
+              <button onClick={handleCloseChatRoom}>Close Chat Room</button>
+              <ChatRoom roomId={currentRoomId} />
+            </>
+          )}
           {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
           <FriendList
             inRoom={false}
