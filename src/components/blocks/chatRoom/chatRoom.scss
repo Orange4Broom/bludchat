@@ -1,33 +1,47 @@
-.messageFrom__ {
-  &me {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    max-width: 500px;
-    width: 100%;
-    height: 40px;
-    flex-direction: row-reverse;
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+
+  .messageFrom__ {
+    &me {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      max-width: 500px;
+      width: 100%;
+      height: auto;
+      flex-direction: row-reverse;
+    }
+
+    &friend {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      max-width: 500px;
+      width: 100%;
+      height: auto;
+      flex-direction: row;
+    }
   }
 
-  &friend {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    max-width: 500px;
-    width: 100%;
-    height: 40px;
-    flex-direction: row;
+  .userPhoto {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 10px;
   }
-}
 
-.userPhoto {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin: 0 10px;
-}
+  .message {
+    display: flex;
+    flex-direction: column-reverse;
 
-.chatImage {
-  width: 80px;
-  height: 60px;
+
+    .chatImage {
+      width: 80px;
+      height: 60px;
+  }
+  }
+  
 }
