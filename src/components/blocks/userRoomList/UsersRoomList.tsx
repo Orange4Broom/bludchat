@@ -33,6 +33,7 @@ interface CurrentUser {
 export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
   const [members, setMembers] = useState<User[]>([]);
   const [friends, setFriends] = useState<string[]>([]);
+  const [roomCreatorId, setRoomCreatorId] = useState<string | null>(null);
   const currentUser = auth.currentUser as CurrentUser;
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
       if (roomDoc.exists()) {
         const roomData = roomDoc.data();
         const memberIds = roomData?.members || [];
+        setRoomCreatorId(roomData?.creatorId || null);
 
         const memberPromises = memberIds.map(async (memberId: string) => {
           const userRef = doc(firestore, "users", memberId);
@@ -73,7 +75,7 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
     fetchFriends();
   }, [roomId, currentUser]);
 
-  const handleAddFriend = async (friendId: string) => {
+  const handleAddUserToRoom = async (friendId: string) => {
     if (!currentUser) {
       console.log("No user is authenticated");
       return;
@@ -110,6 +112,37 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
     }
   };
 
+  const handleRemoveUserFromRoom = async (userId: string) => {
+    if (!currentUser) {
+      console.log("No user is authenticated");
+      return;
+    }
+
+    try {
+      // Remove user from room
+      const roomRef = doc(firestore, "rooms", roomId);
+      const roomDoc = await getDoc(roomRef);
+
+      if (!roomDoc.exists()) {
+        console.error("Room not found");
+        return;
+      }
+
+      const roomData = roomDoc.data();
+      const updatedMembers = roomData?.members.filter(
+        (memberId: string) => memberId !== userId
+      );
+
+      await setDoc(roomRef, { members: updatedMembers }, { merge: true });
+
+      setMembers((prevMembers) =>
+        prevMembers.filter((member) => member.id !== userId)
+      );
+    } catch (error) {
+      console.error("Error removing user from room: ", error);
+    }
+  };
+
   return (
     <div>
       <h3>Room Members</h3>
@@ -123,10 +156,17 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
             />
             {member.name}
             {!friends.includes(member.id) && member.id !== currentUser.uid ? (
-              <button onClick={() => handleAddFriend(member.id)}>
+              <button onClick={() => handleAddUserToRoom(member.id)}>
                 Add Friend
               </button>
-            ) : null}
+            ) : (
+              currentUser.uid === roomCreatorId &&
+              member.id !== currentUser.uid && (
+                <button onClick={() => handleRemoveUserFromRoom(member.id)}>
+                  Remove user from room
+                </button>
+              )
+            )}
           </li>
         ))}
       </ul>
