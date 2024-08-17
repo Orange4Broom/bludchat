@@ -15,6 +15,7 @@ import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../firebase/firebase";
 import { AddUserToRoom } from "../addUserToRoom/AddUserToRoom";
 import { UsersRoomList } from "../userRoomList/UsersRoomList";
+import "./chatRoom.scss";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
@@ -35,9 +36,16 @@ interface Message {
   photoURL: string;
 }
 
+interface User {
+  uid: string;
+  displayName: string;
+  photoURL: string;
+}
+
 export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const user = auth.currentUser as User;
 
   useEffect(() => {
     const messagesRef = collection(firestore, "rooms", roomId, "messages");
@@ -91,13 +99,26 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     <div>
       <div>
         {messages.map((msg) => (
-          <div key={msg.id}>
-            <img src={msg.photoURL ?? "defaultPhotoURL"} alt="Avatar" />
+          <div
+            key={msg.id}
+            className={`messageFrom__${
+              user && msg.uid === user.uid ? "me" : "friend"
+            }`}
+          >
+            <img
+              className="userPhoto"
+              src={msg.photoURL ?? "defaultPhotoURL"}
+              alt="Avatar"
+            />
             <p>{msg.text}</p>
             {msg.fileURL &&
               msg.fileName &&
               (isImageFile(msg.fileName) ? (
-                <img src={msg.fileURL} alt={msg.fileName} />
+                <img
+                  className="chatImage"
+                  src={msg.fileURL}
+                  alt={msg.fileName}
+                />
               ) : isVideoFile(msg.fileName) ? (
                 <video controls>
                   <source src={msg.fileURL} type="video/mp4" />
