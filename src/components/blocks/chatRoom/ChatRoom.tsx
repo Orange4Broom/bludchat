@@ -60,98 +60,110 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     return unsubscribe;
   }, [roomId]);
 
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const { uid, photoURL } = auth.currentUser!;
-    await addDoc(collection(firestore, "rooms", roomId, "messages"), {
-      text: newMessage,
-      createdAt: serverTimestamp(),
-      uid,
-      photoURL,
-    });
-    setNewMessage("");
-  };
+const sendMessage = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const { uid, photoURL } = auth.currentUser!;
+  const text = newMessage;
+  const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+  const file = fileInput?.files?.[0];
+
+  if (!text && !file) {
+    // Pokud není ani text ani soubor, neodesílat nic
+    return;
+  }
 
   const sendFile = async (file: File) => {
-    const { uid } = auth.currentUser!;
     const storageRef = ref(storage, `files/${uid}/${file.name}`);
     await uploadBytes(storageRef, file);
     const fileURL = await getDownloadURL(storageRef);
 
-    await addDoc(collection(firestore, "rooms", roomId, "messages"), {
+    return {
       fileURL,
       fileName: file.name,
-      createdAt: serverTimestamp(),
-      uid,
-      photoURL: auth.currentUser?.photoURL ?? "defaultPhotoURL",
-    });
+    };
   };
 
-  const isImageFile = (fileName: string) => {
-    return /\.(jpg|jpeg|png|gif)$/i.test(fileName);
-  };
+  let fileData = {};
+  if (file) {
+    fileData = await sendFile(file);
+  }
 
-  const isVideoFile = (fileName: string) => {
-    return /\.(mp4|webm|ogg)$/i.test(fileName);
-  };
+  await addDoc(collection(firestore, "rooms", roomId, "messages"), {
+    text,
+    createdAt: serverTimestamp(),
+    uid,
+    photoURL,
+    ...fileData,
+  });
 
-  return (
+  setNewMessage("");
+  if (fileInput) {
+    fileInput.value = "";
+  }
+};
+
+const isImageFile = (fileName: string) => {
+  return /\.(jpg|jpeg|png|gif)$/i.test(fileName);
+};
+
+const isVideoFile = (fileName: string) => {
+  return /\.(mp4|webm|ogg)$/i.test(fileName);
+};
+
+return (
+  <>
     <div>
-      <div>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`messageFrom__${
-              user && msg.uid === user.uid ? "me" : "friend"
-            }`}
-          >
-            <img
-              className="userPhoto"
-              src={msg.photoURL ?? "defaultPhotoURL"}
-              alt="Avatar"
-            />
-            <p>{msg.text}</p>
-            {msg.fileURL &&
-              msg.fileName &&
-              (isImageFile(msg.fileName) ? (
-                <img
-                  className="chatImage"
-                  src={msg.fileURL}
-                  alt={msg.fileName}
-                />
-              ) : isVideoFile(msg.fileName) ? (
-                <video controls>
-                  <source src={msg.fileURL} type="video/mp4" />
-                  <source src={msg.fileURL} type="video/webm" />
-                  <source src={msg.fileURL} type="video/ogg" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <a href={msg.fileURL} target="_blank" rel="noopener noreferrer">
-                  {msg.fileName}
-                </a>
-              ))}
-          </div>
-        ))}
-      </div>
-      <form onSubmit={sendMessage}>
-        <input
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message"
-        />
-        <button type="submit">Send</button>
-      </form>
+      {messages.map((msg) => (
+        <div
+          key={msg.id}
+          className={`messageFrom__${
+            user && msg.uid === user.uid ? "me" : "friend"
+          }`}
+        >
+          <img
+            className="userPhoto"
+            src={msg.photoURL ?? "defaultPhotoURL"}
+            alt="Avatar"
+          />
+          <p>{msg.text}</p>
+          {msg.fileURL &&
+            msg.fileName &&
+            (isImageFile(msg.fileName) ? (
+              <img
+                className="chatImage"
+                src={msg.fileURL}
+                alt={msg.fileName}
+              />
+            ) : isVideoFile(msg.fileName) ? (
+              <video controls>
+                <source src={msg.fileURL} type="video/mp4" />
+                <source src={msg.fileURL} type="video/webm" />
+                <source src={msg.fileURL} type="video/ogg" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <a href={msg.fileURL} target="_blank" rel="noopener noreferrer">
+                {msg.fileName}
+              </a>
+            ))}
+        </div>
+      ))}
+    </div>
+    <form onSubmit={sendMessage}>
+      <input
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        placeholder="Type a message"
+      />
+      <button type="submit">Send</button>
       <input
         type="file"
-        onChange={(e) => {
-          if (e.target.files) {
-            sendFile(e.target.files[0]);
-          }
-        }}
+        id="fileInput"
       />
+    </form>
       <AddUserToRoom roomId={roomId} />
       <UsersRoomList roomId={roomId} />
-    </div>
+  </>
   );
 };
