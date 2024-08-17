@@ -24,10 +24,16 @@ interface User {
   profilePicture: string;
 }
 
+interface CurrentUser {
+  uid: string;
+  displayName: string;
+  photoURL: string;
+}
+
 export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
   const [members, setMembers] = useState<User[]>([]);
   const [friends, setFriends] = useState<string[]>([]);
-  const currentUser = auth.currentUser;
+  const currentUser = auth.currentUser as CurrentUser;
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -116,13 +122,11 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
               style={{ height: "32px", width: "32px" }}
             />
             {member.name}
-            {currentUser &&
-              (!friends.includes(member.id) ||
-                member.id === currentUser.uid) && (
-                <button onClick={() => handleAddFriend(member.id)}>
-                  Add Friend
-                </button>
-              )}
+            {!friends.includes(member.id) && member.id !== currentUser.uid ? (
+              <button onClick={() => handleAddFriend(member.id)}>
+                Add Friend
+              </button>
+            ) : null}
           </li>
         ))}
       </ul>
