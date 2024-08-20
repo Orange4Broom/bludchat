@@ -10,6 +10,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src/"),
       "@typings": path.resolve(__dirname, "src/typings/"),
+      "@hooks": path.resolve(__dirname, "src/hooks/"),
+      "@elements": path.resolve(__dirname, "src/components/elements/"),
+      "@blocks": path.resolve(__dirname, "src/components/blocks/"),
+      "@fbase": path.resolve(__dirname, "src/firebase/"),
       //'@images': path.resolve(__dirname, 'src/assets/images/'),
     },
   },

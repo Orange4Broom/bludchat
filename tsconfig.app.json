@@ -26,7 +26,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "@typings/*": ["./src/typings/*"],
-      // "@Components/*": ["src/Components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@elements/*": ["./src/components/elements/*"],
+      "@blocks/*": ["./src/components/blocks/*"],
+      "@fbase/*": ["./src/firebase/*"],
       //"@images/*": ["src/assets/images/*"],
     },
   },
