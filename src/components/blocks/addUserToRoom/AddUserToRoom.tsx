@@ -3,7 +3,7 @@ import { auth } from "@fbase/firebase";
 import { FriendList } from "@blocks/friendList/FriendList";
 import { AddFriend } from "@blocks/friendList/AddFriend";
 
-import { useAddUserToRoom } from "@hooks/useAddUserToRoom";
+import { useAddUserToRoom } from "@hooks/room/useAddUserToRoom";
 
 import { ChatRoomProps } from "@typings/ChatRoomProps";
 

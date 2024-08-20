@@ -1,15 +1,18 @@
 import { useEffect } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { auth } from "./firebase/firebase";
-import { Logout } from "./components/elements/logout/Logout";
-import { GoogleSignIn } from "./components/elements/googleSignIn/GoogleSignIn";
-import { FriendList } from "./components/blocks/friendList/FriendList";
-import { AddFriend } from "./components/blocks/friendList/AddFriend";
-import { useAuthHandlers } from "./hooks/useAuthHandlers";
-import { useChatRoomHandlers } from "./hooks/useChatRoomHandlers";
-import { CreateRoom } from "./components/elements/createRoom/CreateRoom";
-import { RoomList } from "./components/blocks/roomList/RoomList";
-import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
+import { auth } from "@fbase/firebase";
+
+import { Logout } from "@elements/logout/Logout";
+import { GoogleSignIn } from "@elements/googleSignIn/GoogleSignIn";
+import { CreateRoom } from "@elements/createRoom/CreateRoom";
+
+import { RoomList } from "@blocks/roomList/RoomList";
+import { ChatRoom } from "@blocks/chatRoom/ChatRoom";
+import { FriendList } from "@blocks/friendList/FriendList";
+import { AddFriend } from "@blocks/friendList/AddFriend";
+
+import { useAuthHandlers } from "@hooks/useAuthHandlers";
+import { useChatRoomHandlers } from "@hooks/room/useChatRoomHandlers";
 
 export const App = () => {
   const {

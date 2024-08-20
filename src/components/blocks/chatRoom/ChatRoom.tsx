@@ -14,14 +14,14 @@ import { firebaseConfig } from "@fbase/firebase";
 import { AddUserToRoom } from "@blocks/addUserToRoom/AddUserToRoom";
 import { UsersRoomList } from "@blocks/userRoomList/UsersRoomList";
 
-import { useSendMessage } from "@hooks/useSendMessage";
-import { useFileValidation } from "@hooks/useFileValidation";
+import { useSendMessage } from "@/hooks/room/useSendMessage";
+import { useFileValidation } from "@/hooks/room/useFileValidation";
 
 import { User } from "@typings/User";
 import { Message } from "@typings/Message";
 import { ChatRoomProps } from "@typings/ChatRoomProps";
 
-import "./chatRoom.scss";
+import "@blocks/chatRoom/chatRoom.scss";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
