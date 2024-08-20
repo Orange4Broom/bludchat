@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { auth } from "../firebase/firebase";
-import { User } from "../typings/User";
+import { auth } from "@fbase/firebase";
+import { User } from "@typings/User";
 
 export const useRemoveUserFromRoom = (
   roomId: string,

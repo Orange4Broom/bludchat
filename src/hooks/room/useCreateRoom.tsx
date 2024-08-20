@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { app } from "../firebase/firebase";
 import { getAuth } from "firebase/auth";
+import { app } from "@fbase/firebase";
 
 export const useCreateRoom = () => {
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getAuth, signInWithPopup } from "firebase/auth";
-import { app, provider, firestore } from "../firebase/firebase";
+import { app, provider, firestore } from "@fbase/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 export const useGoogleSignIn = () => {

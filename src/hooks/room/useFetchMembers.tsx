@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { User } from "../typings/User";
+import { User } from "@typings/User";
 
 export const useFetchMembers = (roomId: string) => {
   const [members, setMembers] = useState<User[]>([]);

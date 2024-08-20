@@ -6,7 +6,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import { User } from "../typings/User";
+import { User } from "@typings/User";
 
 export const useStartChatWithFriend = (uid: string, displayName: string) => {
   const [loading, setLoading] = useState(false);

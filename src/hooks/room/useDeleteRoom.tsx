@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getFirestore, doc, deleteDoc } from "firebase/firestore";
-import { app } from "../firebase/firebase";
+import { app } from "@fbase/firebase";
 
 export const useDeleteRoom = () => {
   const [loading, setLoading] = useState(false);

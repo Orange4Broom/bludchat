@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { auth } from "../firebase/firebase";
+import { auth } from "@fbase/firebase";
 
 export const useFetchFriends = () => {
   const [friends, setFriends] = useState<string[]>([]);

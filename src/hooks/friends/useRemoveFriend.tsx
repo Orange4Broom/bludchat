@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getFirestore, doc, deleteDoc } from "firebase/firestore";
 
-import { User } from "../typings/User";
+import { User } from "@typings/User";
 
 export const useRemoveFriend = (uid: string) => {
   const [loading, setLoading] = useState(false);

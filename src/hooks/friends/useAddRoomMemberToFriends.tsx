@@ -7,8 +7,8 @@ import {
   collection,
   onSnapshot,
 } from "firebase/firestore";
-import { auth } from "../firebase/firebase";
-import { User } from "../typings/User";
+import { auth } from "@fbase/firebase";
+import { User } from "@typings/User";
 
 export const useAddRoomMemberToFriends = (
   setFriends: React.Dispatch<React.SetStateAction<string[]>>
