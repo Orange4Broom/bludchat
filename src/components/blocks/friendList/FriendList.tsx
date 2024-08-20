@@ -10,43 +10,32 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-
-interface FriendListProps {
-  userId: string;
-  userName: string;
-  onSelectFriend?: (userId: string) => void;
-  inRoom: boolean;
-}
-
-interface Friend {
-  id: string;
-  name: string;
-  profilePicture: string;
-}
+import { User } from "../../../typings/User";
+import { FriendListProps } from "../../../typings/Friend";
 
 export const FriendList: React.FC<FriendListProps> = ({
-  userId,
-  userName,
+  uid,
+  displayName,
   onSelectFriend,
   inRoom,
 }) => {
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<User[]>([]);
   const firestore = getFirestore();
 
   useEffect(() => {
-    if (!userId) {
+    if (!uid) {
       console.error("userId is undefined");
       return;
     }
 
-    const friendsRef = collection(firestore, "users", userId, "friends");
+    const friendsRef = collection(firestore, "users", uid, "friends");
     const unsubscribe = onSnapshot(
       friendsRef,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const data = snapshot.docs.map((doc) => ({
           ...doc.data(),
-          id: doc.id,
-        })) as Friend[];
+          uid: doc.id,
+        })) as User[];
         setFriends(data);
       },
       (error) => {
@@ -55,18 +44,18 @@ export const FriendList: React.FC<FriendListProps> = ({
     );
 
     return () => unsubscribe();
-  }, [userId, firestore]);
+  }, [uid, firestore]);
 
-  const startChatWithFriend = async (friend: Friend) => {
+  const startChatWithFriend = async (friend: User) => {
     try {
       const roomsRef = collection(firestore, "rooms");
       await addDoc(roomsRef, {
-        name: `${friend.name} and ${userName}`,
-        creatorId: userId,
-        members: [userId, friend.id],
+        name: `${friend.displayName} and ${displayName}`,
+        creatorId: uid,
+        members: [uid, friend.uid],
         createdAt: serverTimestamp(),
       });
-      alert(`Chat room created with ${friend.name}`);
+      alert(`Chat room created with ${friend.displayName}`);
     } catch (error) {
       console.error("Error creating chat room: ", error);
       alert("Failed to create chat room");
@@ -75,10 +64,10 @@ export const FriendList: React.FC<FriendListProps> = ({
 
   const removeFriend = async (friendId: string) => {
     try {
-      const friendRef = doc(firestore, "users", userId, "friends", friendId);
+      const friendRef = doc(firestore, "users", uid, "friends", friendId);
       await deleteDoc(friendRef);
       setFriends((prevFriends) =>
-        prevFriends.filter((friend) => friend.id !== friendId)
+        prevFriends.filter((friend) => friend.uid !== friendId)
       );
       alert("Friend removed successfully");
     } catch (error) {
@@ -92,16 +81,16 @@ export const FriendList: React.FC<FriendListProps> = ({
       <h3>Friend List</h3>
       <ul>
         {friends.map((friend) => (
-          <div key={friend.id}>
+          <div key={friend.uid}>
             <img
-              src={friend.profilePicture}
+              src={friend.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {friend.name}{" "}
+            {friend.displayName}{" "}
             {inRoom ? (
               <button
-                onClick={() => onSelectFriend && onSelectFriend(friend.id)}
+                onClick={() => onSelectFriend && onSelectFriend(friend.uid)}
               >
                 Add to Room
               </button>
@@ -110,7 +99,7 @@ export const FriendList: React.FC<FriendListProps> = ({
                 <button onClick={() => startChatWithFriend(friend)}>
                   Start Chat
                 </button>
-                <button onClick={() => removeFriend(friend.id)}>
+                <button onClick={() => removeFriend(friend.uid)}>
                   Remove Friend
                 </button>
               </>

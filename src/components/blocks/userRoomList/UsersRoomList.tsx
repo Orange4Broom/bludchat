@@ -11,30 +11,17 @@ import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../firebase/firebase";
 import { auth } from "../../../firebase/firebase";
 
+import { ChatRoomProps } from "../../../typings/ChatRoomProps";
+import { User } from "../../../typings/User";
+
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 
-interface UsersRoomListProps {
-  roomId: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  profilePicture: string;
-}
-
-interface CurrentUser {
-  uid: string;
-  displayName: string;
-  photoURL: string;
-}
-
-export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
+export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [members, setMembers] = useState<User[]>([]);
   const [friends, setFriends] = useState<string[]>([]);
   const [roomCreatorId, setRoomCreatorId] = useState<string | null>(null);
-  const currentUser = auth.currentUser as CurrentUser;
+  const currentUser = auth.currentUser as User;
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -49,7 +36,7 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
         const memberPromises = memberIds.map(async (memberId: string) => {
           const userRef = doc(firestore, "users", memberId);
           const userDoc = await getDoc(userRef);
-          return { id: memberId, ...userDoc.data() } as User;
+          return { uid: memberId, ...userDoc.data() } as User;
         });
 
         const membersData = await Promise.all(memberPromises);
@@ -136,7 +123,7 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
       await setDoc(roomRef, { members: updatedMembers }, { merge: true });
 
       setMembers((prevMembers) =>
-        prevMembers.filter((member) => member.id !== userId)
+        prevMembers.filter((member) => member.uid !== userId)
       );
     } catch (error) {
       console.error("Error removing user from room: ", error);
@@ -148,21 +135,21 @@ export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
       <h3>Room Members</h3>
       <ul>
         {members.map((member) => (
-          <li key={member.id}>
+          <li key={member.uid}>
             <img
-              src={member.profilePicture}
+              src={member.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {member.name}
-            {!friends.includes(member.id) && member.id !== currentUser.uid ? (
-              <button onClick={() => handleAddUserToRoom(member.id)}>
+            {member.displayName}
+            {!friends.includes(member.uid) && member.uid !== currentUser.uid ? (
+              <button onClick={() => handleAddUserToRoom(member.uid)}>
                 Add Friend
               </button>
             ) : (
               currentUser.uid === roomCreatorId &&
-              member.id !== currentUser.uid && (
-                <button onClick={() => handleRemoveUserFromRoom(member.id)}>
+              member.uid !== currentUser.uid && (
+                <button onClick={() => handleRemoveUserFromRoom(member.uid)}>
                   Remove user from room
                 </button>
               )

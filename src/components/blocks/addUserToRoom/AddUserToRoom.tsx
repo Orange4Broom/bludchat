@@ -4,11 +4,9 @@ import { FriendList } from "../friendList/FriendList";
 import { AddFriend } from "../friendList/AddFriend";
 import { auth } from "../../../firebase/firebase";
 
-interface AddUserToRoomProps {
-  roomId: string;
-}
+import { ChatRoomProps } from "../../../typings/ChatRoomProps";
 
-export const AddUserToRoom: React.FC<AddUserToRoomProps> = ({ roomId }) => {
+export const AddUserToRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [userId, setUserId] = useState("");
   const currentUser = auth.currentUser;
 
@@ -36,8 +34,8 @@ export const AddUserToRoom: React.FC<AddUserToRoomProps> = ({ roomId }) => {
       />
       <button onClick={() => handleAddUser(userId)}>Add User</button>
       <FriendList
-        userName={currentUser.displayName || "Nameless User"}
-        userId={currentUser.uid}
+        uid={currentUser.uid}
+        displayName={currentUser.displayName || "Nameless User"}
         onSelectFriend={handleAddUser}
         inRoom={true}
       />

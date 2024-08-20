@@ -15,32 +15,17 @@ import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../firebase/firebase";
 import { AddUserToRoom } from "../addUserToRoom/AddUserToRoom";
 import { UsersRoomList } from "../userRoomList/UsersRoomList";
+
+import { User } from "../../../typings/User";
+import { Message } from "../../../typings/Message";
+import { ChatRoomProps } from "../../../typings/ChatRoomProps";
+
 import "./chatRoom.scss";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
-
-interface ChatRoomProps {
-  roomId: string;
-}
-
-interface Message {
-  id: string;
-  text?: string;
-  fileURL?: string;
-  fileName?: string;
-  createdAt: unknown;
-  uid: string;
-  photoURL: string;
-}
-
-interface User {
-  uid: string;
-  displayName: string;
-  photoURL: string;
-}
 
 export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [messages, setMessages] = useState<Message[]>([]);

@@ -2,13 +2,9 @@ import React from "react";
 import { getFirestore, doc, deleteDoc } from "firebase/firestore";
 import { app } from "../../../firebase/firebase";
 
-interface DeleteRoomButtonProps {
-  roomId: string;
-}
+import { ChatRoomProps } from "../../../typings/ChatRoomProps";
 
-export const DeleteRoomButton: React.FC<DeleteRoomButtonProps> = ({
-  roomId,
-}) => {
+export const DeleteRoomButton: React.FC<ChatRoomProps> = ({ roomId }) => {
   const firestore = getFirestore(app);
 
   const deleteRoom = async () => {
