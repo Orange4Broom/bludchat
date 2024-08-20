@@ -6,11 +6,8 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  addDoc,
-  serverTimestamp,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../firebase/firebase";
 import { AddUserToRoom } from "../addUserToRoom/AddUserToRoom";
@@ -20,17 +17,20 @@ import { User } from "../../../typings/User";
 import { Message } from "../../../typings/Message";
 import { ChatRoomProps } from "../../../typings/ChatRoomProps";
 
+import { useSendMessage } from "../../../hooks/useSendMessage";
+import { useFileValidation } from "../../../hooks/useFileValidation";
+
 import "./chatRoom.scss";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 
 export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
   const user = auth.currentUser as User;
+  const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
+  const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
 
   useEffect(() => {
     const messagesRef = collection(firestore, "rooms", roomId, "messages");
@@ -44,66 +44,6 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     });
     return unsubscribe;
   }, [roomId]);
-
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { uid, photoURL } = auth.currentUser!;
-    const text = newMessage;
-    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
-    const file = fileInput?.files?.[0];
-
-    if (!text && !file) {
-      // Pokud není ani text ani soubor, neodesílat nic
-      return;
-    }
-
-    const sendFile = async (file: File) => {
-      const storageRef = ref(storage, `files/${uid}/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const fileURL = await getDownloadURL(storageRef);
-
-      return {
-        fileURL,
-        fileName: file.name,
-      };
-    };
-
-    let fileData = {};
-    if (file) {
-      fileData = await sendFile(file);
-    }
-
-    await addDoc(collection(firestore, "rooms", roomId, "messages"), {
-      text,
-      createdAt: serverTimestamp(),
-      uid,
-      photoURL,
-      ...fileData,
-    });
-
-    setNewMessage("");
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-
-  const isImageFile = (fileName: string) => {
-    return /\.(jpg|jpeg|png|gif)$/i.test(fileName);
-  };
-
-  const isVideoFile = (fileName: string) => {
-    return /\.(mp4|webm|ogg)$/i.test(fileName);
-  };
-
-  const isValidURL = (str: string) => {
-    try {
-      new URL(str);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
 
   return (
     <>
