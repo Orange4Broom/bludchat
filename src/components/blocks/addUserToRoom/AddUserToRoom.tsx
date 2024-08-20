@@ -1,24 +1,15 @@
-import React, { useState } from "react";
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import React from "react";
 import { FriendList } from "../friendList/FriendList";
 import { AddFriend } from "../friendList/AddFriend";
 import { auth } from "../../../firebase/firebase";
 
+import { useAddUserToRoom } from "../../../hooks/useAddUserToRoom";
+
 import { ChatRoomProps } from "../../../typings/ChatRoomProps";
 
 export const AddUserToRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
-  const [userId, setUserId] = useState("");
+  const { handleAddUser, userId, setUserId } = useAddUserToRoom(roomId);
   const currentUser = auth.currentUser;
-
-  const handleAddUser = async (id: string) => {
-    if (!id) return;
-    const firestore = getFirestore();
-    const roomRef = doc(firestore, "rooms", roomId);
-    await updateDoc(roomRef, {
-      members: arrayUnion(id),
-    });
-    setUserId(""); // Clear the input field after adding the user
-  };
 
   if (!currentUser) {
     return <div>Please log in to add users to the room.</div>;
