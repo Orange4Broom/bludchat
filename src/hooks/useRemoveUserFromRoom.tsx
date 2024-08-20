@@ -11,7 +11,7 @@ export const useRemoveUserFromRoom = (
   const firestore = getFirestore();
   const currentUser = auth.currentUser as User;
 
-  const handleRemoveUserFromRoom = async (userId: string) => {
+  const handleRemoveUserFromRoom = async (uId: string) => {
     if (!currentUser) {
       console.log("No user is authenticated");
       return;
@@ -29,13 +29,13 @@ export const useRemoveUserFromRoom = (
 
       const roomData = roomDoc.data();
       const updatedMembers = roomData?.members.filter(
-        (memberId: string) => memberId !== userId
+        (memberId: string) => memberId !== uId
       );
 
       await setDoc(roomRef, { members: updatedMembers }, { merge: true });
 
       setMembers((prevMembers) =>
-        prevMembers.filter((member) => member.uid !== userId)
+        prevMembers.filter((member) => member.uid !== uId)
       );
     } catch (error) {
       console.error("Error removing user from room: ", error);

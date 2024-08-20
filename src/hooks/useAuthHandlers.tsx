@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { getAuth } from "firebase/auth";
-import { User } from "../typings/User";
+
+interface User {
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL: string;
+}
 
 export const useAuthHandlers = () => {
   const [user, setUser] = useState<User | null>(null);

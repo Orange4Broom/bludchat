@@ -18,6 +18,7 @@ export const FriendList: React.FC<FriendListProps> = ({
   inRoom,
 }) => {
   const [friends, setFriends] = useState<User[]>([]);
+  const [updateFriends, setUpdateFriends] = useState(false);
   const firestore = getFirestore();
   const { startChatWithFriend, loading: chatLoading } = useStartChatWithFriend(
     uid,
@@ -47,7 +48,14 @@ export const FriendList: React.FC<FriendListProps> = ({
     );
 
     return () => unsubscribe();
-  }, [uid, firestore]);
+  }, [uid, firestore, updateFriends]);
+
+  const handleAddToRoom = (friendUid: string) => {
+    if (onSelectFriend) {
+      onSelectFriend(friendUid);
+      setUpdateFriends((prev) => !prev); // Toggle updateFriends to trigger re-fetch
+    }
+  };
 
   return (
     <div>
@@ -56,15 +64,13 @@ export const FriendList: React.FC<FriendListProps> = ({
         {friends.map((friend) => (
           <div key={friend.uid}>
             <img
-              src={friend.photoURL}
+              src={friend.photoURL || "path/to/fallback/image.png"}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
             {friend.displayName}{" "}
             {inRoom ? (
-              <button
-                onClick={() => onSelectFriend && onSelectFriend(friend.uid)}
-              >
+              <button onClick={() => handleAddToRoom(friend.uid)}>
                 Add to Room
               </button>
             ) : (

@@ -1,16 +1,15 @@
 import { useEffect } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { auth } from "./firebase/firebase";
-import { CreateRoom } from "./components/elements/createRoom/CreateRoom";
-import { RoomList } from "./components/blocks/roomList/RoomList";
-import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
 import { Logout } from "./components/elements/logout/Logout";
 import { GoogleSignIn } from "./components/elements/googleSignIn/GoogleSignIn";
 import { FriendList } from "./components/blocks/friendList/FriendList";
 import { AddFriend } from "./components/blocks/friendList/AddFriend";
 import { useAuthHandlers } from "./hooks/useAuthHandlers";
 import { useChatRoomHandlers } from "./hooks/useChatRoomHandlers";
-import { User } from "./typings/User";
+import { CreateRoom } from "./components/elements/createRoom/CreateRoom";
+import { RoomList } from "./components/blocks/roomList/RoomList";
+import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
 
 export const App = () => {
   const {
@@ -25,21 +24,26 @@ export const App = () => {
   const { handleCloseChatRoom } = useChatRoomHandlers();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user: User | null) => {
-      if (user) {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
         const db = getFirestore();
-        const userRef = doc(db, "users", user.uid);
+        const userRef = doc(db, "users", firebaseUser.uid);
         const userDoc = await getDoc(userRef);
 
         if (!userDoc.exists()) {
           await setDoc(userRef, {
-            id: user.uid,
-            name: user.displayName || "Anonymous",
-            email: user.email,
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName || "Anonymous",
+            email: firebaseUser.email,
           });
         }
 
-        setUser(user);
+        setUser({
+          uid: firebaseUser.uid,
+          displayName: firebaseUser.displayName || "Anonymous",
+          email: firebaseUser.email || "",
+          photoURL: firebaseUser.photoURL || "",
+        });
       } else {
         setUser(null);
       }

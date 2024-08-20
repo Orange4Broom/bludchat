@@ -26,16 +26,16 @@ export const useAddFriend = () => {
 
       const friendData = friendDoc.data();
       const friendProfilePicture =
-        friendData?.profilePicture || "defaultProfilePictureUrl";
-      const friendName = friendData?.name || "Friend Name";
+        friendData?.photoURL || "defaultProfilePictureUrl";
+      const friendName = friendData?.displayName || "Friend Name";
 
       // Add friend to current user's friend list
       await setDoc(
         doc(firestore, "users", currentUser.uid, "friends", friendId),
         {
-          id: friendId,
-          name: friendName,
-          profilePicture: friendProfilePicture,
+          uid: friendId,
+          displayName: friendName,
+          photoURL: friendProfilePicture,
         }
       );
 
@@ -43,9 +43,9 @@ export const useAddFriend = () => {
       await setDoc(
         doc(firestore, "users", friendId, "friends", currentUser.uid),
         {
-          id: currentUser.uid,
-          name: currentUser.displayName || "Your Name",
-          profilePicture: currentUser.photoURL || "yourProfilePictureUrl",
+          uid: currentUser.uid,
+          displayName: currentUser.displayName || "Your Name",
+          photoURL: currentUser.photoURL || "yourProfilePictureUrl",
         }
       );
 

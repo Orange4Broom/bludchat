@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
 import { auth } from "../firebase/firebase";
 import { User } from "../typings/User";
 
@@ -9,6 +16,23 @@ export const useAddRoomMemberToFriends = (
   const [loading, setLoading] = useState(false);
   const firestore = getFirestore();
   const currentUser = auth.currentUser as User;
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const friendsCollectionRef = collection(
+      firestore,
+      "users",
+      currentUser.uid,
+      "friends"
+    );
+    const unsubscribe = onSnapshot(friendsCollectionRef, (snapshot) => {
+      const friendsList = snapshot.docs.map((doc) => doc.id);
+      setFriends(friendsList);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser, firestore, setFriends]);
 
   const handleAddUserToRoom = async (friendId: string) => {
     if (!currentUser) {
@@ -28,19 +52,17 @@ export const useAddRoomMemberToFriends = (
 
       const friendData = friendDoc.data();
       const friendProfilePicture =
-        friendData?.profilePicture || "defaultProfilePictureUrl";
+        friendData?.photoURL || "defaultProfilePictureUrl";
       const friendName = friendData?.name || "Friend Name";
 
       await setDoc(
         doc(firestore, "users", currentUser.uid, "friends", friendId),
         {
-          id: friendId,
-          name: friendName,
-          profilePicture: friendProfilePicture,
+          uid: friendId,
+          displayName: friendName,
+          photoURL: friendProfilePicture,
         }
       );
-
-      setFriends((prevFriends) => [...prevFriends, friendId]);
     } catch (error) {
       console.error("Error adding friend: ", error);
     } finally {

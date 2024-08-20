@@ -16,10 +16,10 @@ export const useGoogleSignIn = () => {
       if (user) {
         const userRef = doc(firestore, "users", user.uid);
         await setDoc(userRef, {
-          id: user.uid,
-          name: user.displayName || "Anonymous",
+          uid: user.uid,
+          displayName: user.displayName || "Anonymous",
           email: user.email,
-          profilePicture: user.photoURL || "defaultProfilePictureUrl",
+          photoURL: user.photoURL || "defaultProfilePictureUrl",
         });
       }
     } catch (error) {
