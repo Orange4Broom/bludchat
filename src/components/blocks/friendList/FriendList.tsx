@@ -5,13 +5,11 @@ import {
   onSnapshot,
   DocumentData,
   QuerySnapshot,
-  addDoc,
-  serverTimestamp,
-  deleteDoc,
-  doc,
 } from "firebase/firestore";
 import { User } from "../../../typings/User";
 import { FriendListProps } from "../../../typings/Friend";
+import { useStartChatWithFriend } from "../../../hooks/useStartChatWithFriend";
+import { useRemoveFriend } from "../../../hooks/useRemoveFriend";
 
 export const FriendList: React.FC<FriendListProps> = ({
   uid,
@@ -21,6 +19,11 @@ export const FriendList: React.FC<FriendListProps> = ({
 }) => {
   const [friends, setFriends] = useState<User[]>([]);
   const firestore = getFirestore();
+  const { startChatWithFriend, loading: chatLoading } = useStartChatWithFriend(
+    uid,
+    displayName
+  );
+  const { removeFriend, loading: removeLoading } = useRemoveFriend(uid);
 
   useEffect(() => {
     if (!uid) {
@@ -46,36 +49,6 @@ export const FriendList: React.FC<FriendListProps> = ({
     return () => unsubscribe();
   }, [uid, firestore]);
 
-  const startChatWithFriend = async (friend: User) => {
-    try {
-      const roomsRef = collection(firestore, "rooms");
-      await addDoc(roomsRef, {
-        name: `${friend.displayName} and ${displayName}`,
-        creatorId: uid,
-        members: [uid, friend.uid],
-        createdAt: serverTimestamp(),
-      });
-      alert(`Chat room created with ${friend.displayName}`);
-    } catch (error) {
-      console.error("Error creating chat room: ", error);
-      alert("Failed to create chat room");
-    }
-  };
-
-  const removeFriend = async (friendId: string) => {
-    try {
-      const friendRef = doc(firestore, "users", uid, "friends", friendId);
-      await deleteDoc(friendRef);
-      setFriends((prevFriends) =>
-        prevFriends.filter((friend) => friend.uid !== friendId)
-      );
-      alert("Friend removed successfully");
-    } catch (error) {
-      console.error("Error removing friend: ", error);
-      alert("Failed to remove friend");
-    }
-  };
-
   return (
     <div>
       <h3>Friend List</h3>
@@ -96,10 +69,16 @@ export const FriendList: React.FC<FriendListProps> = ({
               </button>
             ) : (
               <>
-                <button onClick={() => startChatWithFriend(friend)}>
+                <button
+                  onClick={() => startChatWithFriend(friend)}
+                  disabled={chatLoading}
+                >
                   Start Chat
                 </button>
-                <button onClick={() => removeFriend(friend.uid)}>
+                <button
+                  onClick={() => removeFriend(friend.uid, setFriends)}
+                  disabled={removeLoading}
+                >
                   Remove Friend
                 </button>
               </>
