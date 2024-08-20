@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCreateRoom } from "../../../hooks/useCreateRoom";
+import { useCreateRoom } from "@hooks/room/useCreateRoom";
 
 export const CreateRoom: React.FC = () => {
   const [roomName, setRoomName] = useState("");

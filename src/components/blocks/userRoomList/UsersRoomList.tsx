@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../../../firebase/firebase";
-import { ChatRoomProps } from "../../../typings/ChatRoomProps";
-import { User } from "../../../typings/User";
-import { useFetchMembers } from "../../../hooks/useFetchMembers";
-import { useFetchFriends } from "../../../hooks/useFetchFriends";
-import { useRemoveUserFromRoom } from "../../../hooks/useRemoveUserFromRoom";
-import { useAddRoomMemberToFriends } from "../../../hooks/useAddRoomMemberToFriends";
+import { auth } from "@fbase/firebase";
+
+import { useFetchMembers } from "@hooks/room/useFetchMembers";
+import { useFetchFriends } from "@hooks/friends/useFetchFriends";
+import { useRemoveUserFromRoom } from "@hooks/room/useRemoveUserFromRoom";
+import { useAddRoomMemberToFriends } from "@hooks/friends/useAddRoomMemberToFriends";
+
+import { ChatRoomProps } from "@typings/ChatRoomProps";
+import { User } from "@typings/User";
 
 export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);

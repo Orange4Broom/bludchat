@@ -1,5 +1,5 @@
 import React from "react";
-import { useGoogleSignIn } from "../../../hooks/useGoogleSignIn";
+import { useGoogleSignIn } from "@hooks/useGoogleSignIn";
 
 export const GoogleSignIn: React.FC = () => {
   const { signInWithGoogle, loading } = useGoogleSignIn();

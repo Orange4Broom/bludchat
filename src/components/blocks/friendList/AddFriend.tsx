@@ -1,5 +1,5 @@
 import React from "react";
-import { useAddFriend } from "../../../hooks/useAddFriend";
+import { useAddFriend } from "@hooks/useAddFriend";
 
 export const AddFriend: React.FC = () => {
   const { friendId, setFriendId, addFriend } = useAddFriend();

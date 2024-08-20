@@ -6,10 +6,12 @@ import {
   DocumentData,
   QuerySnapshot,
 } from "firebase/firestore";
-import { User } from "../../../typings/User";
-import { FriendListProps } from "../../../typings/Friend";
-import { useStartChatWithFriend } from "../../../hooks/useStartChatWithFriend";
-import { useRemoveFriend } from "../../../hooks/useRemoveFriend";
+
+import { useStartChatWithFriend } from "@hooks/friends/useStartChatWithFriend";
+import { useRemoveFriend } from "@hooks/friends/useRemoveFriend";
+
+import { User } from "@typings/User";
+import { FriendListProps } from "@typings/Friend";
 
 export const FriendList: React.FC<FriendListProps> = ({
   uid,

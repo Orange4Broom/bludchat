@@ -1,6 +1,7 @@
 import React from "react";
-import { useDeleteRoom } from "../../../hooks/useDeleteRoom";
-import { ChatRoomProps } from "../../../typings/ChatRoomProps";
+import { useDeleteRoom } from "@hooks/room/useDeleteRoom";
+
+import { ChatRoomProps } from "@typings/ChatRoomProps";
 
 export const DeleteRoomButton: React.FC<ChatRoomProps> = ({ roomId }) => {
   const { deleteRoom, loading } = useDeleteRoom();

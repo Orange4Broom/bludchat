@@ -1,11 +1,11 @@
 import React from "react";
-import { FriendList } from "../friendList/FriendList";
-import { AddFriend } from "../friendList/AddFriend";
-import { auth } from "../../../firebase/firebase";
+import { auth } from "@fbase/firebase";
+import { FriendList } from "@blocks/friendList/FriendList";
+import { AddFriend } from "@blocks/friendList/AddFriend";
 
-import { useAddUserToRoom } from "../../../hooks/useAddUserToRoom";
+import { useAddUserToRoom } from "@hooks/useAddUserToRoom";
 
-import { ChatRoomProps } from "../../../typings/ChatRoomProps";
+import { ChatRoomProps } from "@typings/ChatRoomProps";
 
 export const AddUserToRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const { handleAddUser, userId, setUserId } = useAddUserToRoom(roomId);
