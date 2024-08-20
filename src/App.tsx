@@ -1,19 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { auth } from "./firebase/firebase"; // Adjust the import according to your project structure
+import { auth } from "./firebase/firebase";
 import { CreateRoom } from "./components/elements/createRoom/CreateRoom";
 import { RoomList } from "./components/blocks/roomList/RoomList";
 import { ChatRoom } from "./components/blocks/chatRoom/ChatRoom";
 import { Logout } from "./components/elements/logout/Logout";
 import { GoogleSignIn } from "./components/elements/googleSignIn/GoogleSignIn";
-import { User } from "firebase/auth"; // Import User type from Firebase
 import { FriendList } from "./components/blocks/friendList/FriendList";
 import { AddFriend } from "./components/blocks/friendList/AddFriend";
+import { useAuthHandlers } from "./hooks/useAuthHandlers";
+import { useChatRoomHandlers } from "./hooks/useChatRoomHandlers";
+import { User } from "./typings/User";
 
 export const App = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
-  const [oneOnOneChatUser, setOneOnOneChatUser] = useState<User | null>(null);
+  const {
+    user,
+    setUser,
+    currentRoomId,
+    setCurrentRoomId,
+    oneOnOneChatUser,
+    handleLogout,
+  } = useAuthHandlers();
+
+  const { handleCloseChatRoom } = useChatRoomHandlers();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user: User | null) => {
@@ -36,19 +45,7 @@ export const App = () => {
       }
     });
     return unsubscribe;
-  }, []);
-
-  const handleLogout = async () => {
-    await auth.signOut();
-    setUser(null);
-    setCurrentRoomId(null);
-    setOneOnOneChatUser(null);
-    localStorage.clear();
-  };
-
-  const handleCloseChatRoom = () => {
-    setCurrentRoomId(null);
-  };
+  }, [setUser]);
 
   return (
     <div>
@@ -68,8 +65,8 @@ export const App = () => {
           {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
           <FriendList
             inRoom={false}
-            userId={user.uid}
-            userName={user.displayName || "User"}
+            uid={user.uid}
+            displayName={user.displayName || "User"}
           />
           <AddFriend />
           <Logout onLogout={handleLogout} />

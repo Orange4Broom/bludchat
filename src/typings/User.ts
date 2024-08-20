@@ -1,5 +1,7 @@
+// src/typings/User.ts
 export interface User {
   uid: string;
-  displayName: string;
-  photoURL: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
 }
