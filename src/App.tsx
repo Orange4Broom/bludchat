@@ -54,6 +54,7 @@ export const App = () => {
     <div>
       {user ? (
         <>
+          <p>CleanUp version</p>
           <h2>User: {user.displayName}</h2>
           <h2>User Id: {user.uid}</h2>
           <CreateRoom />
