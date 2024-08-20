@@ -5,48 +5,43 @@ import {
   onSnapshot,
   DocumentData,
   QuerySnapshot,
-  addDoc,
-  serverTimestamp,
-  deleteDoc,
-  doc,
 } from "firebase/firestore";
 
-interface FriendListProps {
-  userId: string;
-  userName: string;
-  onSelectFriend?: (userId: string) => void;
-  inRoom: boolean;
-}
+import { useStartChatWithFriend } from "@hooks/friends/useStartChatWithFriend";
+import { useRemoveFriend } from "@hooks/friends/useRemoveFriend";
 
-interface Friend {
-  id: string;
-  name: string;
-  profilePicture: string;
-}
+import { User } from "@typings/User";
+import { FriendListProps } from "@typings/Friend";
 
 export const FriendList: React.FC<FriendListProps> = ({
-  userId,
-  userName,
+  uid,
+  displayName,
   onSelectFriend,
   inRoom,
 }) => {
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<User[]>([]);
+  const [updateFriends, setUpdateFriends] = useState(false);
   const firestore = getFirestore();
+  const { startChatWithFriend, loading: chatLoading } = useStartChatWithFriend(
+    uid,
+    displayName
+  );
+  const { removeFriend, loading: removeLoading } = useRemoveFriend(uid);
 
   useEffect(() => {
-    if (!userId) {
+    if (!uid) {
       console.error("userId is undefined");
       return;
     }
 
-    const friendsRef = collection(firestore, "users", userId, "friends");
+    const friendsRef = collection(firestore, "users", uid, "friends");
     const unsubscribe = onSnapshot(
       friendsRef,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const data = snapshot.docs.map((doc) => ({
           ...doc.data(),
-          id: doc.id,
-        })) as Friend[];
+          uid: doc.id,
+        })) as User[];
         setFriends(data);
       },
       (error) => {
@@ -55,35 +50,12 @@ export const FriendList: React.FC<FriendListProps> = ({
     );
 
     return () => unsubscribe();
-  }, [userId, firestore]);
+  }, [uid, firestore, updateFriends]);
 
-  const startChatWithFriend = async (friend: Friend) => {
-    try {
-      const roomsRef = collection(firestore, "rooms");
-      await addDoc(roomsRef, {
-        name: `${friend.name} and ${userName}`,
-        creatorId: userId,
-        members: [userId, friend.id],
-        createdAt: serverTimestamp(),
-      });
-      alert(`Chat room created with ${friend.name}`);
-    } catch (error) {
-      console.error("Error creating chat room: ", error);
-      alert("Failed to create chat room");
-    }
-  };
-
-  const removeFriend = async (friendId: string) => {
-    try {
-      const friendRef = doc(firestore, "users", userId, "friends", friendId);
-      await deleteDoc(friendRef);
-      setFriends((prevFriends) =>
-        prevFriends.filter((friend) => friend.id !== friendId)
-      );
-      alert("Friend removed successfully");
-    } catch (error) {
-      console.error("Error removing friend: ", error);
-      alert("Failed to remove friend");
+  const handleAddToRoom = (friendUid: string) => {
+    if (onSelectFriend) {
+      onSelectFriend(friendUid);
+      setUpdateFriends((prev) => !prev); // Toggle updateFriends to trigger re-fetch
     }
   };
 
@@ -92,25 +64,29 @@ export const FriendList: React.FC<FriendListProps> = ({
       <h3>Friend List</h3>
       <ul>
         {friends.map((friend) => (
-          <div key={friend.id}>
+          <div key={friend.uid}>
             <img
-              src={friend.profilePicture}
+              src={friend.photoURL || "path/to/fallback/image.png"}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {friend.name}{" "}
+            {friend.displayName}{" "}
             {inRoom ? (
-              <button
-                onClick={() => onSelectFriend && onSelectFriend(friend.id)}
-              >
+              <button onClick={() => handleAddToRoom(friend.uid)}>
                 Add to Room
               </button>
             ) : (
               <>
-                <button onClick={() => startChatWithFriend(friend)}>
+                <button
+                  onClick={() => startChatWithFriend(friend)}
+                  disabled={chatLoading}
+                >
                   Start Chat
                 </button>
-                <button onClick={() => removeFriend(friend.id)}>
+                <button
+                  onClick={() => removeFriend(friend.uid, setFriends)}
+                  disabled={removeLoading}
+                >
                   Remove Friend
                 </button>
               </>

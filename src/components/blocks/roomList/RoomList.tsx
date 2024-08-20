@@ -9,19 +9,10 @@ import {
   where,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { DeleteRoomButton } from "../../elements/deleteRoomButton/DeleteRoomButton";
 
-interface RoomListProps {
-  onRoomSelect: (roomId: string | null) => void;
-}
+import { DeleteRoomButton } from "@elements/deleteRoomButton/DeleteRoomButton";
 
-interface Room {
-  id: string;
-  name: string;
-  createdAt: unknown;
-  creatorId: string;
-  members: string[];
-}
+import { Room, RoomListProps } from "@typings/Room";
 
 export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
   const [rooms, setRooms] = useState<Room[]>([]);

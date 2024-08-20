@@ -21,7 +21,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@typings/*": ["./src/typings/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@elements/*": ["./src/components/elements/*"],
+      "@blocks/*": ["./src/components/blocks/*"],
+      "@fbase/*": ["./src/firebase/*"],
+      //"@images/*": ["src/assets/images/*"],
+    },
   },
   "include": ["src"]
 }

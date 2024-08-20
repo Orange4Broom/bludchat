@@ -1,29 +1,13 @@
 import React, { useState } from "react";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { app } from "../../../firebase/firebase";
-import { getAuth } from "firebase/auth";
+import { useCreateRoom } from "@hooks/room/useCreateRoom";
 
 export const CreateRoom: React.FC = () => {
   const [roomName, setRoomName] = useState("");
-  const firestore = getFirestore(app);
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const { createRoom, loading } = useCreateRoom();
 
-  const createRoom = async () => {
-    if (roomName.trim() === "" || !user) return;
-    try {
-      await addDoc(collection(firestore, "rooms"), {
-        name: roomName,
-        createdAt: new Date(),
-        creatorId: user.uid,
-        members: [user.uid],
-      });
-      setRoomName("");
-      alert("Room created successfully");
-    } catch (error) {
-      console.error("Error creating room: ", error);
-      alert("Failed to create room");
-    }
+  const handleCreateRoom = async () => {
+    await createRoom(roomName);
+    setRoomName("");
   };
 
   return (
@@ -33,7 +17,9 @@ export const CreateRoom: React.FC = () => {
         onChange={(e) => setRoomName(e.target.value)}
         placeholder="Room Name"
       />
-      <button onClick={createRoom}>Create Room</button>
+      <button onClick={handleCreateRoom} disabled={loading}>
+        {loading ? "Creating..." : "Create Room"}
+      </button>
     </div>
   );
 };

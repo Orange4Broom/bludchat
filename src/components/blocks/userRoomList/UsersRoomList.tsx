@@ -1,168 +1,59 @@
 import React, { useState, useEffect } from "react";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  getDocs,
-  setDoc,
-} from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../../firebase/firebase";
-import { auth } from "../../../firebase/firebase";
+import { auth } from "@fbase/firebase";
 
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore(app);
+import { useFetchMembers } from "@hooks/room/useFetchMembers";
+import { useFetchFriends } from "@hooks/friends/useFetchFriends";
+import { useRemoveUserFromRoom } from "@hooks/room/useRemoveUserFromRoom";
+import { useAddRoomMemberToFriends } from "@hooks/friends/useAddRoomMemberToFriends";
 
-interface UsersRoomListProps {
-  roomId: string;
-}
+import { ChatRoomProps } from "@typings/ChatRoomProps";
+import { User } from "@typings/User";
 
-interface User {
-  id: string;
-  name: string;
-  profilePicture: string;
-}
-
-interface CurrentUser {
-  uid: string;
-  displayName: string;
-  photoURL: string;
-}
-
-export const UsersRoomList: React.FC<UsersRoomListProps> = ({ roomId }) => {
-  const [members, setMembers] = useState<User[]>([]);
+export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
-  const [roomCreatorId, setRoomCreatorId] = useState<string | null>(null);
-  const currentUser = auth.currentUser as CurrentUser;
+  const [members, setMembers] = useState<User[]>([]);
+  const { members: fetchedMembers, roomCreatorId } = useFetchMembers(roomId);
+  const fetchedFriends = useFetchFriends();
+  const { handleAddUserToRoom, loading: addLoading } =
+    useAddRoomMemberToFriends(setFriends);
+  const { handleRemoveUserFromRoom, loading: removeLoading } =
+    useRemoveUserFromRoom(roomId, setMembers);
+  const currentUser = auth.currentUser as User;
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      const roomRef = doc(firestore, "rooms", roomId);
-      const roomDoc = await getDoc(roomRef);
+    setMembers(fetchedMembers);
+  }, [fetchedMembers]);
 
-      if (roomDoc.exists()) {
-        const roomData = roomDoc.data();
-        const memberIds = roomData?.members || [];
-        setRoomCreatorId(roomData?.creatorId || null);
-
-        const memberPromises = memberIds.map(async (memberId: string) => {
-          const userRef = doc(firestore, "users", memberId);
-          const userDoc = await getDoc(userRef);
-          return { id: memberId, ...userDoc.data() } as User;
-        });
-
-        const membersData = await Promise.all(memberPromises);
-        setMembers(membersData);
-      }
-    };
-
-    const fetchFriends = async () => {
-      if (currentUser) {
-        const friendsRef = collection(
-          firestore,
-          "users",
-          currentUser.uid,
-          "friends"
-        );
-        const friendsSnapshot = await getDocs(friendsRef);
-        const friendsList = friendsSnapshot.docs.map((doc) => doc.id);
-        setFriends(friendsList);
-      }
-    };
-
-    fetchMembers();
-    fetchFriends();
-  }, [roomId, currentUser]);
-
-  const handleAddUserToRoom = async (friendId: string) => {
-    if (!currentUser) {
-      console.log("No user is authenticated");
-      return;
-    }
-
-    try {
-      // Fetch friend's profile picture and name
-      const friendDocRef = doc(firestore, "users", friendId);
-      const friendDoc = await getDoc(friendDocRef);
-
-      if (!friendDoc.exists()) {
-        console.error("Friend not found");
-        return;
-      }
-
-      const friendData = friendDoc.data();
-      const friendProfilePicture =
-        friendData?.profilePicture || "defaultProfilePictureUrl";
-      const friendName = friendData?.name || "Friend Name";
-
-      // Add friend to current user's friend list
-      await setDoc(
-        doc(firestore, "users", currentUser.uid, "friends", friendId),
-        {
-          id: friendId,
-          name: friendName,
-          profilePicture: friendProfilePicture,
-        }
-      );
-
-      setFriends((prevFriends) => [...prevFriends, friendId]);
-    } catch (error) {
-      console.error("Error adding friend: ", error);
-    }
-  };
-
-  const handleRemoveUserFromRoom = async (userId: string) => {
-    if (!currentUser) {
-      console.log("No user is authenticated");
-      return;
-    }
-
-    try {
-      // Remove user from room
-      const roomRef = doc(firestore, "rooms", roomId);
-      const roomDoc = await getDoc(roomRef);
-
-      if (!roomDoc.exists()) {
-        console.error("Room not found");
-        return;
-      }
-
-      const roomData = roomDoc.data();
-      const updatedMembers = roomData?.members.filter(
-        (memberId: string) => memberId !== userId
-      );
-
-      await setDoc(roomRef, { members: updatedMembers }, { merge: true });
-
-      setMembers((prevMembers) =>
-        prevMembers.filter((member) => member.id !== userId)
-      );
-    } catch (error) {
-      console.error("Error removing user from room: ", error);
-    }
-  };
+  useEffect(() => {
+    setFriends(fetchedFriends);
+  }, [fetchedFriends]);
 
   return (
     <div>
       <h3>Room Members</h3>
       <ul>
         {members.map((member) => (
-          <li key={member.id}>
+          <li key={member.uid}>
             <img
-              src={member.profilePicture}
+              src={member.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {member.name}
-            {!friends.includes(member.id) && member.id !== currentUser.uid ? (
-              <button onClick={() => handleAddUserToRoom(member.id)}>
+            {member.displayName}
+            {!friends.includes(member.uid) && member.uid !== currentUser.uid ? (
+              <button
+                onClick={() => handleAddUserToRoom(member.uid)}
+                disabled={addLoading}
+              >
                 Add Friend
               </button>
             ) : (
               currentUser.uid === roomCreatorId &&
-              member.id !== currentUser.uid && (
-                <button onClick={() => handleRemoveUserFromRoom(member.id)}>
+              member.uid !== currentUser.uid && (
+                <button
+                  onClick={() => handleRemoveUserFromRoom(member.uid)}
+                  disabled={removeLoading}
+                >
                   Remove user from room
                 </button>
               )
