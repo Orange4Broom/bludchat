@@ -27,7 +27,7 @@ export const useAddFriend = () => {
       const friendData = friendDoc.data();
       const friendProfilePicture =
         friendData?.photoURL || "defaultProfilePictureUrl";
-      const friendName = friendData?.displayName || "Friend Name";
+      const friendName = friendData?.displayName;
 
       // Add friend to current user's friend list
       await setDoc(

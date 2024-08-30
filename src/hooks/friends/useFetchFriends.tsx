@@ -24,6 +24,5 @@ export const useFetchFriends = () => {
 
     fetchFriends();
   }, [currentUser, firestore]);
-
   return friends;
 };

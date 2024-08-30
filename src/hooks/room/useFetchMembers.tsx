@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, onSnapshot, getDoc } from "firebase/firestore";
 import { User } from "@typings/User";
 
 export const useFetchMembers = (roomId: string) => {
@@ -8,10 +8,9 @@ export const useFetchMembers = (roomId: string) => {
   const firestore = getFirestore();
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      const roomRef = doc(firestore, "rooms", roomId);
-      const roomDoc = await getDoc(roomRef);
+    const roomRef = doc(firestore, "rooms", roomId);
 
+    const unsubscribe = onSnapshot(roomRef, async (roomDoc) => {
       if (roomDoc.exists()) {
         const roomData = roomDoc.data();
         const memberIds = roomData?.members || [];
@@ -26,9 +25,9 @@ export const useFetchMembers = (roomId: string) => {
         const membersData = await Promise.all(memberPromises);
         setMembers(membersData);
       }
-    };
+    });
 
-    fetchMembers();
+    return () => unsubscribe();
   }, [roomId, firestore]);
 
   return { members, roomCreatorId };
