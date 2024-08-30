@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { getFirestore, doc, deleteDoc } from "firebase/firestore";
 import { app } from "@fbase/firebase";
+import { useToastify } from "../useToastify";
 
 export const useDeleteRoom = () => {
   const [loading, setLoading] = useState(false);
   const firestore = getFirestore(app);
+  const notify = useToastify().notify;
 
   const deleteRoom = async (roomId: string) => {
     setLoading(true);
     try {
       await deleteDoc(doc(firestore, "rooms", roomId));
-      alert("Room deleted successfully");
+      notify("success", "Room deleted successfully");
     } catch (error) {
-      console.error("Error deleting room: ", error);
-      alert("Failed to delete room");
+      notify("error", "Error deleting room");
     } finally {
       setLoading(false);
     }

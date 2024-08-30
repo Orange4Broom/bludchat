@@ -10,6 +10,7 @@ import { RoomList } from "@blocks/roomList/RoomList";
 import { ChatRoom } from "@blocks/chatRoom/ChatRoom";
 
 import { useAuthHandlers } from "@hooks/useAuthHandlers";
+import { ToastContainer } from "react-toastify";
 
 export const App = () => {
   const {
@@ -50,25 +51,40 @@ export const App = () => {
   }, [setUser]);
 
   return (
-    <div>
-      {user ? (
-        <>
-          <h2>User: {user.displayName}</h2>
-          <h2>User Id: {user.uid}</h2>
-          <CreateRoom />
-          <RoomList onRoomSelect={setCurrentRoomId} />
+    <>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
 
-          {currentRoomId && (
-            <>
-              <ChatRoom roomId={currentRoomId} />
-            </>
-          )}
-          {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
-          <Logout onLogout={handleLogout} />
-        </>
-      ) : (
-        <GoogleSignIn />
-      )}
-    </div>
+      <div>
+        {user ? (
+          <>
+            <h2>User: {user.displayName}</h2>
+            <h2>User Id: {user.uid}</h2>
+            <CreateRoom />
+            <RoomList onRoomSelect={setCurrentRoomId} />
+
+            {currentRoomId && (
+              <>
+                <ChatRoom roomId={currentRoomId} />
+              </>
+            )}
+            {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
+            <Logout onLogout={handleLogout} />
+          </>
+        ) : (
+          <GoogleSignIn />
+        )}
+      </div>
+    </>
   );
 };

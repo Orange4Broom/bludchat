@@ -2,10 +2,12 @@ import { useState } from "react";
 import { getAuth, signInWithPopup } from "firebase/auth";
 import { app, provider, firestore } from "@fbase/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { useToastify } from "@hooks/useToastify";
 
 export const useGoogleSignIn = () => {
   const [loading, setLoading] = useState(false);
   const auth = getAuth(app);
+  const notify = useToastify().notify;
 
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -22,8 +24,9 @@ export const useGoogleSignIn = () => {
           photoURL: user.photoURL || "defaultProfilePictureUrl",
         });
       }
+      notify("success", "Successfully signed in with Google");
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      notify("error", "Error signing in with Google:");
     } finally {
       setLoading(false);
     }
