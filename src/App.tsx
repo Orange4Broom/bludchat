@@ -8,11 +8,8 @@ import { CreateRoom } from "@elements/createRoom/CreateRoom";
 
 import { RoomList } from "@blocks/roomList/RoomList";
 import { ChatRoom } from "@blocks/chatRoom/ChatRoom";
-import { FriendList } from "@blocks/friendList/FriendList";
-import { AddFriend } from "@blocks/friendList/AddFriend";
 
 import { useAuthHandlers } from "@hooks/useAuthHandlers";
-import { useChatRoomHandlers } from "@hooks/room/useChatRoomHandlers";
 
 export const App = () => {
   const {
@@ -23,8 +20,6 @@ export const App = () => {
     oneOnOneChatUser,
     handleLogout,
   } = useAuthHandlers();
-
-  const { handleCloseChatRoom } = useChatRoomHandlers();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -58,24 +53,17 @@ export const App = () => {
     <div>
       {user ? (
         <>
-          <p>CleanUp version</p>
           <h2>User: {user.displayName}</h2>
           <h2>User Id: {user.uid}</h2>
           <CreateRoom />
           <RoomList onRoomSelect={setCurrentRoomId} />
+
           {currentRoomId && (
             <>
-              <button onClick={handleCloseChatRoom}>Close Chat Room</button>
               <ChatRoom roomId={currentRoomId} />
             </>
           )}
           {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
-          <FriendList
-            inRoom={false}
-            uid={user.uid}
-            displayName={user.displayName || "User"}
-          />
-          <AddFriend />
           <Logout onLogout={handleLogout} />
         </>
       ) : (
