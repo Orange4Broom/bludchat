@@ -3,10 +3,7 @@ import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { auth } from "@fbase/firebase";
 import { User } from "@typings/User";
 
-export const useRemoveUserFromRoom = (
-  roomId: string,
-  setMembers: React.Dispatch<React.SetStateAction<User[]>>
-) => {
+export const useRemoveUserFromRoom = (roomId: string) => {
   const [loading, setLoading] = useState(false);
   const firestore = getFirestore();
   const currentUser = auth.currentUser as User;
@@ -33,10 +30,6 @@ export const useRemoveUserFromRoom = (
       );
 
       await setDoc(roomRef, { members: updatedMembers }, { merge: true });
-
-      setMembers((prevMembers) =>
-        prevMembers.filter((member) => member.uid !== uId)
-      );
     } catch (error) {
       console.error("Error removing user from room: ", error);
     } finally {

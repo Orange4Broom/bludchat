@@ -1,7 +1,5 @@
 import React from "react";
 import { auth } from "@fbase/firebase";
-import { FriendList } from "@blocks/friendList/FriendList";
-import { AddFriend } from "@blocks/friendList/AddFriend";
 
 import { useAddUserToRoom } from "@hooks/room/useAddUserToRoom";
 
@@ -24,13 +22,6 @@ export const AddUserToRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
         placeholder="Enter user ID"
       />
       <button onClick={() => handleAddUser(userId)}>Add User</button>
-      <FriendList
-        uid={currentUser.uid}
-        displayName={currentUser.displayName || "Nameless User"}
-        onSelectFriend={handleAddUser}
-        inRoom={true}
-      />
-      <AddFriend />
     </div>
   );
 };

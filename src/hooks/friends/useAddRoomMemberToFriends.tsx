@@ -53,7 +53,7 @@ export const useAddRoomMemberToFriends = (
       const friendData = friendDoc.data();
       const friendProfilePicture =
         friendData?.photoURL || "defaultProfilePictureUrl";
-      const friendName = friendData?.name || "Friend Name";
+      const friendName = friendData?.displayName;
 
       await setDoc(
         doc(firestore, "users", currentUser.uid, "friends", friendId),
