@@ -17,11 +17,16 @@ import { UsersRoomList } from "@blocks/userRoomList/UsersRoomList";
 import { useSendMessage } from "@/hooks/room/useSendMessage";
 import { useFileValidation } from "@/hooks/room/useFileValidation";
 
-import { User } from "@typings/User";
 import { Message } from "@typings/Message";
 import { ChatRoomProps } from "@typings/ChatRoomProps";
 
 import "@blocks/chatRoom/chatRoom.scss";
+import { AddFriend } from "../friendList/AddFriend";
+import { FriendList } from "../friendList/FriendList";
+import { useAddUserToRoom } from "@/hooks/room/useAddUserToRoom";
+import { useFetchMembers } from "@/hooks/room/useFetchMembers";
+import { User } from "@/typings/User";
+import { UpdateRoom } from "@/components/elements/updateRoom/UpdateRoom";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
@@ -29,9 +34,11 @@ const auth = getAuth(app);
 
 export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const user = auth.currentUser as User;
+  const currentUser = auth.currentUser as User;
   const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
+  const { handleAddUser } = useAddUserToRoom(roomId);
+  const { roomCreatorId } = useFetchMembers(roomId);
 
   useEffect(() => {
     const messagesRef = collection(firestore, "rooms", roomId, "messages");
@@ -48,12 +55,16 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
 
   return (
     <>
+      {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
+      {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
+
+      <UsersRoomList roomId={roomId} />
       <div className="chat">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`messageFrom__${
-              user && msg.uid === user.uid ? "me" : "friend"
+              currentUser && msg.uid === currentUser.uid ? "me" : "friend"
             }`}
           >
             <img
@@ -110,8 +121,13 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
         <button type="submit">Send</button>
         <input type="file" id="fileInput" />
       </form>
-      <AddUserToRoom roomId={roomId} />
-      <UsersRoomList roomId={roomId} />
+      <FriendList
+        uid={currentUser.uid}
+        displayName={currentUser.displayName || "Nameless User"}
+        onSelectFriend={handleAddUser}
+        roomId={roomId}
+      />
+      <AddFriend />
     </>
   );
 };

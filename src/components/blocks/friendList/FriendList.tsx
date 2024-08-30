@@ -9,15 +9,17 @@ import {
 
 import { useStartChatWithFriend } from "@hooks/friends/useStartChatWithFriend";
 import { useRemoveFriend } from "@hooks/friends/useRemoveFriend";
+import { useFetchMembers } from "@/hooks/room/useFetchMembers"; // Assuming this is the correct import
 
 import { User } from "@typings/User";
 import { FriendListProps } from "@typings/Friend";
+import { auth } from "@/firebase/firebase";
 
 export const FriendList: React.FC<FriendListProps> = ({
   uid,
   displayName,
   onSelectFriend,
-  inRoom,
+  roomId,
 }) => {
   const [friends, setFriends] = useState<User[]>([]);
   const [updateFriends, setUpdateFriends] = useState(false);
@@ -27,6 +29,8 @@ export const FriendList: React.FC<FriendListProps> = ({
     displayName
   );
   const { removeFriend, loading: removeLoading } = useRemoveFriend(uid);
+  const { members, roomCreatorId } = useFetchMembers(roomId);
+  const currentUser = auth.currentUser as User;
 
   useEffect(() => {
     if (!uid) {
@@ -59,6 +63,10 @@ export const FriendList: React.FC<FriendListProps> = ({
     }
   };
 
+  const handleFriendInRoom = (friendUid: string) => {
+    return members.some((friend) => friend.uid === friendUid);
+  };
+
   return (
     <div>
       <h3>Friend List</h3>
@@ -66,15 +74,34 @@ export const FriendList: React.FC<FriendListProps> = ({
         {friends.map((friend) => (
           <div key={friend.uid}>
             <img
-              src={friend.photoURL || "path/to/fallback/image.png"}
+              src={friend.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
+              onError={(e) => {
+                console.error("Error loading image:", friend.photoURL);
+                (e.target as HTMLImageElement).src = "defaultProfilePictureUrl"; // Fallback image
+              }}
             />
             {friend.displayName}{" "}
-            {inRoom ? (
-              <button onClick={() => handleAddToRoom(friend.uid)}>
-                Add to Room
-              </button>
+            {!handleFriendInRoom(friend.uid) &&
+            currentUser.uid === roomCreatorId ? (
+              <>
+                <button onClick={() => handleAddToRoom(friend.uid)}>
+                  Add to Room
+                </button>
+                <button
+                  onClick={() => startChatWithFriend(friend)}
+                  disabled={chatLoading}
+                >
+                  Start Chat
+                </button>
+                <button
+                  onClick={() => removeFriend(friend.uid, setFriends)}
+                  disabled={removeLoading}
+                >
+                  Remove Friend
+                </button>
+              </>
             ) : (
               <>
                 <button

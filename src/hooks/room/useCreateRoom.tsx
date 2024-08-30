@@ -9,7 +9,7 @@ export const useCreateRoom = () => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  const createRoom = async (roomName: string) => {
+  const createRoom = async (roomName: string, roomURL: string) => {
     if (roomName.trim() === "" || !user) return;
     setLoading(true);
     try {
@@ -18,6 +18,7 @@ export const useCreateRoom = () => {
         createdAt: new Date(),
         creatorId: user.uid,
         members: [user.uid],
+        roomURL: roomURL,
       });
       alert("Room created successfully");
     } catch (error) {
