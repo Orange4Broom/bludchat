@@ -90,7 +90,6 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
       </datalist>
       {selectedFriendKey && (
         <>
-          {/* <p>Selected Friend Key: {selectedFriendKey}</p> */}
           <img
             src={
               searchFirends.find((friend) => friend.uid === selectedFriendKey)

@@ -19,6 +19,8 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
   const firestore = getFirestore();
   const auth = getAuth();
   const user = auth.currentUser;
+  const [searchedRoom, setSearchedRoom] = useState<string>("");
+  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
 
   useEffect(() => {
     if (!user) return;
@@ -39,8 +41,44 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
     return () => unsubscribe();
   }, [firestore, user]);
 
+  const handleRoomChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const roomName = event.target.value;
+    setSearchedRoom(roomName);
+    const selectedRoom = rooms.find((room) => room.name === roomName);
+    if (selectedRoom) {
+      setSelectedRoomId(selectedRoom.id);
+    } else {
+      setSelectedRoomId("");
+    }
+  };
+
+  const selectedRoom = rooms.find((room) => room.name === searchedRoom);
+
   return (
     <div>
+      <input
+        type="input"
+        list="rooms"
+        value={searchedRoom}
+        onChange={handleRoomChange}
+      />
+      <datalist id="rooms">
+        {rooms.map((room) => (
+          <option key={room.id} value={room.name} />
+        ))}
+      </datalist>
+      {selectedRoom ? (
+        <button onClick={() => onRoomSelect(selectedRoomId)}>
+          <img
+            src={selectedRoom.roomURL}
+            alt="roomPicture"
+            style={{ width: "32px", height: "32px" }}
+          />
+          <p>Room Name: {selectedRoom.name}</p>
+          <DeleteRoomButton roomId={selectedRoom.id} />
+        </button>
+      ) : null}
+
       {rooms.map((room) => (
         <div key={room.id}>
           <img
