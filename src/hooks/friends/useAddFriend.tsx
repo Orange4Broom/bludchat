@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { useToastify } from "@hooks/useToastify";
 
 export const useAddFriend = () => {
   const [friendId, setFriendId] = useState("");
   const firestore = getFirestore();
   const auth = getAuth();
   const currentUser = auth.currentUser;
+  const notify = useToastify().notify;
 
   const addFriend = async () => {
     if (!currentUser) {
@@ -49,9 +51,9 @@ export const useAddFriend = () => {
         }
       );
 
-      console.log("Friend added successfully");
+      notify("success", "Friend added successfully");
     } catch (error) {
-      console.error("Error adding friend:", error);
+      notify("error", "Failed to add friend");
     }
   };
 

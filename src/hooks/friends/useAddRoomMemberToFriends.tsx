@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { auth } from "@fbase/firebase";
 import { User } from "@typings/User";
+import { useToastify } from "@hooks/useToastify";
 
 export const useAddRoomMemberToFriends = (
   setFriends: React.Dispatch<React.SetStateAction<string[]>>
@@ -16,6 +17,7 @@ export const useAddRoomMemberToFriends = (
   const [loading, setLoading] = useState(false);
   const firestore = getFirestore();
   const currentUser = auth.currentUser as User;
+  const notify = useToastify().notify;
 
   useEffect(() => {
     if (!currentUser) return;
@@ -63,8 +65,9 @@ export const useAddRoomMemberToFriends = (
           photoURL: friendProfilePicture,
         }
       );
+      notify("success", "Friend added successfully");
     } catch (error) {
-      console.error("Error adding friend: ", error);
+      notify("error", "Failed to add friend");
     } finally {
       setLoading(false);
     }
