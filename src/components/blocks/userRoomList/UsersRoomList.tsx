@@ -14,6 +14,7 @@ import {
   onSnapshot,
   QuerySnapshot,
 } from "firebase/firestore";
+import { LeaveRoomButton } from "@/components/elements/leaveRoomButton/LeaveRoomButton";
 
 export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
@@ -73,7 +74,7 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   };
 
   return (
-    <div>
+    <>
       <h3>Room Members</h3>
       <h4>Search room members</h4>
       <input
@@ -158,6 +159,7 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
           </li>
         ))}
       </ul>
-    </div>
+      <LeaveRoomButton uid={currentUser.uid} roomId={roomId} />
+    </>
   );
 };

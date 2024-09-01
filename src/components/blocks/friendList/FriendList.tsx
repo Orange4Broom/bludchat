@@ -68,7 +68,7 @@ export const FriendList: React.FC<FriendListProps> = ({
   };
 
   return (
-    <div>
+    <>
       <h3>Friend List</h3>
       <ul>
         {friends.map((friend) => (
@@ -121,6 +121,6 @@ export const FriendList: React.FC<FriendListProps> = ({
           </div>
         ))}
       </ul>
-    </div>
+    </>
   );
 };

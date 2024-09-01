@@ -11,6 +11,10 @@ import { ChatRoom } from "@blocks/chatRoom/ChatRoom";
 
 import { useAuthHandlers } from "@hooks/useAuthHandlers";
 import { ToastContainer } from "react-toastify";
+import { AddFriend } from "./components/blocks/friendList/AddFriend";
+import { FriendList } from "./components/blocks/friendList/FriendList";
+import { User } from "./typings/User";
+import { useAddUserToRoom } from "@hooks/room/useAddUserToRoom";
 
 export const App = () => {
   const {
@@ -22,6 +26,8 @@ export const App = () => {
     handleLogout,
     openChatWithNewestMessage,
   } = useAuthHandlers();
+  const currentUser = auth.currentUser as User;
+  const { handleAddUser } = useAddUserToRoom(currentRoomId || "");
 
   useEffect(() => {
     openChatWithNewestMessage();
@@ -73,18 +79,31 @@ export const App = () => {
       <div>
         {user ? (
           <>
-            <h2>User: {user.displayName}</h2>
-            <h2>User Id: {user.uid}</h2>
-            <CreateRoom />
-            <RoomList onRoomSelect={setCurrentRoomId} />
+            <div>
+              <CreateRoom />
+              <RoomList onRoomSelect={setCurrentRoomId} />
+              <h2>User: {user.displayName}</h2>
+              <h2>User Id: {user.uid}</h2>
+              <Logout onLogout={handleLogout} />
+            </div>
 
-            {currentRoomId && (
-              <>
-                <ChatRoom roomId={currentRoomId} />
-              </>
-            )}
-            {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
-            <Logout onLogout={handleLogout} />
+            <div>
+              {currentRoomId && (
+                <>
+                  <ChatRoom roomId={currentRoomId} />
+                </>
+              )}
+              {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
+            </div>
+            <div>
+              <AddFriend />
+              <FriendList
+                uid={currentUser.uid}
+                displayName={currentUser.displayName || "Nameless User"}
+                onSelectFriend={handleAddUser}
+                roomId={currentRoomId || ""}
+              />
+            </div>
           </>
         ) : (
           <GoogleSignIn />

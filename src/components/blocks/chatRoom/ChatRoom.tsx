@@ -23,9 +23,6 @@ import { Message } from "@typings/Message";
 import { ChatRoomProps } from "@typings/ChatRoomProps";
 
 import "@blocks/chatRoom/chatRoom.scss";
-import { AddFriend } from "../friendList/AddFriend";
-import { FriendList } from "../friendList/FriendList";
-import { useAddUserToRoom } from "@/hooks/room/useAddUserToRoom";
 import { useFetchMembers } from "@/hooks/room/useFetchMembers";
 import { User } from "@/typings/User";
 import { UpdateRoom } from "@/components/elements/updateRoom/UpdateRoom";
@@ -43,7 +40,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const currentUser = auth.currentUser as User;
   const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
-  const { handleAddUser } = useAddUserToRoom(roomId);
+
   const { roomCreatorId } = useFetchMembers(roomId);
 
   useEffect(() => {
@@ -83,8 +80,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
       </div>
       {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
       {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
-
       <UsersRoomList roomId={roomId} />
+
       <div className="chat">
         {messages.map((msg) => (
           <div
@@ -147,13 +144,6 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
         <button type="submit">Send</button>
         <input type="file" id="fileInput" />
       </form>
-      <FriendList
-        uid={currentUser.uid}
-        displayName={currentUser.displayName || "Nameless User"}
-        onSelectFriend={handleAddUser}
-        roomId={roomId}
-      />
-      <AddFriend />
     </>
   );
 };

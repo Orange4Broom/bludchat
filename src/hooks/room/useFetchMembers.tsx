@@ -8,11 +8,16 @@ export const useFetchMembers = (roomId: string) => {
   const firestore = getFirestore();
 
   useEffect(() => {
+    if (!roomId) {
+      return;
+    }
+
     const roomRef = doc(firestore, "rooms", roomId);
 
     const unsubscribe = onSnapshot(roomRef, async (roomDoc) => {
       if (roomDoc.exists()) {
         const roomData = roomDoc.data();
+
         const memberIds = roomData?.members || [];
         setRoomCreatorId(roomData?.creatorId || null);
 
@@ -24,6 +29,8 @@ export const useFetchMembers = (roomId: string) => {
 
         const membersData = await Promise.all(memberPromises);
         setMembers(membersData);
+      } else {
+        console.error("roomDoc does not exist for roomId:", roomId);
       }
     });
 
