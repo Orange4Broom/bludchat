@@ -76,10 +76,10 @@ export const App = () => {
         theme="dark"
       />
 
-      <div>
+      <div className="main">
         {user ? (
           <>
-            <div>
+            <div className="main__rooms">
               <CreateRoom />
               <RoomList onRoomSelect={setCurrentRoomId} />
               <h2>User: {user.displayName}</h2>
@@ -87,7 +87,7 @@ export const App = () => {
               <Logout onLogout={handleLogout} />
             </div>
 
-            <div>
+            <div className="main__chat">
               {currentRoomId && (
                 <>
                   <ChatRoom roomId={currentRoomId} />
@@ -95,7 +95,7 @@ export const App = () => {
               )}
               {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
             </div>
-            <div>
+            <div className="main__friends">
               <AddFriend />
               <FriendList
                 uid={currentUser.uid}

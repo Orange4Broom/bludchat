@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   getFirestore,
   collection,
@@ -26,6 +26,7 @@ import "@blocks/chatRoom/chatRoom.scss";
 import { useFetchMembers } from "@/hooks/room/useFetchMembers";
 import { User } from "@/typings/User";
 import { UpdateRoom } from "@/components/elements/updateRoom/UpdateRoom";
+import { Icon } from "@/components/elements/icon/Icon";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
@@ -40,8 +41,9 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const currentUser = auth.currentUser as User;
   const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
-
   const { roomCreatorId } = useFetchMembers(roomId);
+
+  const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -68,25 +70,48 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     return unsubscribe;
   }, [roomId]);
 
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const isLongMessage = (text: string) => {
+    return text.length > 100 || text.includes(" "); // Adjust the condition as needed
+  };
+
   return (
     <>
-      <div className="room-details">
+      <div className="room__details">
         <img
           src={roomDetails.roomURL}
           alt="Room Profile"
           style={{ width: "100px", height: "100px" }}
         />
-        <h2 className="room-name">{roomDetails.name}</h2>
+        <h2 className="room__details__name">{roomDetails.name}</h2>
+        {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
+        {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
+        <UsersRoomList roomId={roomId} />
       </div>
-      {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
-      {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
-      <UsersRoomList roomId={roomId} />
 
-      <div className="chat">
+      <div className="chat__nav">
+        <div className="chat__nav__info">
+          <img
+            className="chat__nav__image"
+            src={roomDetails.roomURL}
+            alt="Room Profile"
+          />
+          <h2 className="chat__nav__name">{roomDetails.name}</h2>
+        </div>
+        <button className="chat__nav__menubutton">
+          <Icon name="bars" type="fas" />{" "}
+        </button>
+      </div>
+      <div className="chat" ref={chatRef}>
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`messageFrom__${
+            className={` messageFrom__${
               currentUser && msg.uid === currentUser.uid ? "me" : "friend"
             }`}
           >
@@ -95,7 +120,11 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
               src={msg.photoURL ?? "defaultPhotoURL"}
               alt="Avatar"
             />
-            <div className="message">
+            <div
+              className={`message ${
+                isLongMessage(msg.text ?? "") ? "long" : ""
+              }`}
+            >
               {msg.text && isValidURL(msg.text) ? (
                 <a href={msg.text} target="_blank" rel="noopener noreferrer">
                   <img

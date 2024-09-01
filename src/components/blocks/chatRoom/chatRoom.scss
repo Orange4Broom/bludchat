@@ -1,28 +1,48 @@
 .chat {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: left;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+
+  padding-bottom: 20px;
+  background-color: #1B1B1B;
+  overflow-y: auto;
 
   .messageFrom__ {
     &me {
       display: flex;
       align-items: center;
-      justify-content: end;
-      max-width: 500px;
+      justify-content: flex-start;
       width: 100%;
       height: auto;
+      padding-right: 10px;
       flex-direction: row-reverse;
+      margin-top: 20px;
+
+      .message {
+        background-color: #454545;
+      }
     }
 
     &friend {
       display: flex;
       align-items: center;
-      justify-content: start;
-      max-width: 500px;
+      justify-content: flex-start;
       width: 100%;
       height: auto;
+      padding-left: 10px;
       flex-direction: row;
+      margin-top: 20px;
+
+      .message {
+        background-color: #454545;
+
+        p {
+          text-align: left;
+        }
+      }
     }
   }
 
@@ -36,6 +56,24 @@
   .message {
     display: flex;
     flex-direction: column-reverse;
+    word-wrap: break-word;
+    background-color: #454545;
+    padding: 10px;
+    border-radius: 6px;
+    
+    p {
+      white-space: pre-wrap;
+      
+      height: auto;
+      text-align: right; /* Default alignment for short messages */
+    }
+
+    &.long {
+      p {
+        width: 30vw;
+        text-align: left; /* Align long messages to the left */
+      }
+    }
 
 
     .chatImage {
@@ -44,4 +82,57 @@
   }
   }
   
+}
+
+.room__details {
+  display: none;
+}
+
+.chat__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 30px;
+  background-color: #242424;
+
+  &__info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__image {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+  }
+
+  &__name {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  &__menubutton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.26);
+    color: rgba(255, 255, 255, 0.86);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out; 
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.36);
+      scale: 1.1;
+    }
+
+  }
 }
