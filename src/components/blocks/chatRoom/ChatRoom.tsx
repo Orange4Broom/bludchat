@@ -6,6 +6,8 @@ import {
   orderBy,
   limit,
   onSnapshot,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
@@ -34,11 +36,27 @@ const auth = getAuth(app);
 
 export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [roomDetails, setRoomDetails] = useState<{
+    name: string;
+    roomURL: string;
+  }>({ name: "", roomURL: "" });
   const currentUser = auth.currentUser as User;
   const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
   const { handleAddUser } = useAddUserToRoom(roomId);
   const { roomCreatorId } = useFetchMembers(roomId);
+
+  useEffect(() => {
+    const fetchRoomDetails = async () => {
+      const roomDoc = await getDoc(doc(firestore, "rooms", roomId));
+      if (roomDoc.exists()) {
+        const roomData = roomDoc.data();
+        setRoomDetails({ name: roomData.name, roomURL: roomData.roomURL });
+      }
+    };
+
+    fetchRoomDetails();
+  }, [roomId]);
 
   useEffect(() => {
     const messagesRef = collection(firestore, "rooms", roomId, "messages");
@@ -55,6 +73,14 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
 
   return (
     <>
+      <div className="room-details">
+        <img
+          src={roomDetails.roomURL}
+          alt="Room Profile"
+          style={{ width: "100px", height: "100px" }}
+        />
+        <h2 className="room-name">{roomDetails.name}</h2>
+      </div>
       {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
       {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
 

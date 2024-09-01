@@ -20,7 +20,9 @@ export const useCreateRoom = () => {
         createdAt: new Date(),
         creatorId: user.uid,
         members: [user.uid],
-        roomURL: roomURL,
+        roomURL: roomURL
+          ? roomURL
+          : "https://firebasestorage.googleapis.com/v0/b/bludchat-604f0.appspot.com/o/files%2FwexAXtUq4yaKfq6WnyRfjLeJDvJ2%2FChat%20no%20profile.png?alt=media&token=e2b3f3da-71d6-4cee-bebd-f0a128c66a2e",
       });
       notify("success", "Room created successfully");
     } catch (error) {

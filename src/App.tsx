@@ -20,7 +20,12 @@ export const App = () => {
     setCurrentRoomId,
     oneOnOneChatUser,
     handleLogout,
+    openChatWithNewestMessage,
   } = useAuthHandlers();
+
+  useEffect(() => {
+    openChatWithNewestMessage();
+  }, [user]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {

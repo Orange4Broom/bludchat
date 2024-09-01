@@ -81,7 +81,7 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
         list="friends"
         value={findedFriend}
         onChange={handleInputChange}
-        placeholder="Search for a friend"
+        placeholder="Search for a room members"
       />
       <datalist id="friends">
         {searchFirends.map((friend) => (
@@ -110,7 +110,7 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
               onClick={() => handleAddUserToRoom(selectedFriendKey)}
               disabled={addLoading}
             >
-              Add Friend
+              Add User to room
             </button>
           ) : currentUser.uid === roomCreatorId &&
             selectedFriendKey !== currentUser.uid &&

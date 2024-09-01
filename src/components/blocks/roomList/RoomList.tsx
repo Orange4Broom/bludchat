@@ -39,7 +39,7 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
     );
 
     return () => unsubscribe();
-  }, [firestore, user]);
+  });
 
   const handleRoomChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const roomName = event.target.value;
