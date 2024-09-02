@@ -1,0 +1,50 @@
+.createroom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100%;
+  padding: 0 10px 0 10px;
+
+  &__name, &__url {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 10px;
+    outline: none;
+    color: rgba(255, 255, 255, 0.86);
+
+    &:focus {
+      outline: 1px solid ;
+      outline-color: rgba(255, 255, 255, 0.86);
+    }
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2f2f2f;
+    color: rgba(255, 255, 255, 0.86);
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #3f3f3f;
+    }
+  }
+}
+
+.createroom__title {
+  padding: 10px 10px 0 10px;
+}

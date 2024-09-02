@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useCreateRoom } from "@hooks/room/useCreateRoom";
 
+import "./createRoom.scss";
+
 export const CreateRoom: React.FC = () => {
   const [roomName, setRoomName] = useState("");
   const [roomURL, setRoomURL] = useState("");
@@ -14,23 +16,26 @@ export const CreateRoom: React.FC = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleCreateRoom}>
+    <>
+      <h3 className="createroom__title">Create Room</h3>
+      <form className="createroom" onSubmit={handleCreateRoom}>
         <input
+          className="createroom__name"
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
           placeholder="Room Name"
         />
         <input
+          className="createroom__url"
           type="text"
+          placeholder="Enter link for room profile picture"
           value={roomURL}
           onChange={(e) => setRoomURL(e.target.value)}
-          placeholder="Enter link for room profile picture"
         />
-        <button type="submit" disabled={loading}>
+        <button className="createroom__button" type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Room"}
         </button>
       </form>
-    </div>
+    </>
   );
 };
