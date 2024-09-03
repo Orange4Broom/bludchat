@@ -66,20 +66,20 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
       <h3>Search for a room</h3>
       <div className="roomlist__mid">
         <input
-          className="roomlist__search"
+          className="roomlist__mid__search"
           type="input"
           list="rooms"
           placeholder="Search for a room"
           value={searchedRoom}
           onChange={handleRoomChange}
         />
-        <datalist id="rooms">
+        <datalist className="roomlist__mid__datalist" id="rooms">
           {rooms.map((room) => (
             <option key={room.id} value={room.name} />
           ))}
         </datalist>
         <button
-          className="roomlist__searchbutton"
+          className="roomlist__mid__searchbutton"
           onClick={() => clearSearch()}
         >
           <Icon name="xmark" type="fas" />{" "}
@@ -90,15 +90,15 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
           className="roomlist__details"
           onClick={() => onRoomSelect(selectedRoomId)}
         >
-          <img
-            className="roomlist__details__image"
-            src={selectedRoom.roomURL}
-            alt="roomPicture"
-            style={{ width: "32px", height: "32px" }}
-          />
-          <p className="roomlist__details__name">
-            Room Name: {selectedRoom.name}
-          </p>
+          <div className="roomlist__details__info">
+            <img
+              className="roomlist__details__image"
+              src={selectedRoom.roomURL}
+              alt="roomPicture"
+              style={{ width: "32px", height: "32px" }}
+            />
+            <p className="roomlist__details__name">{selectedRoom.name}</p>
+          </div>
           <DeleteRoomButton roomId={selectedRoom.id} />
         </div>
       ) : null}
