@@ -80,11 +80,26 @@ export const App = () => {
         {user ? (
           <>
             <div className="main__rooms">
-              <CreateRoom />
-              <RoomList onRoomSelect={setCurrentRoomId} />
-              <h2>User: {user.displayName}</h2>
-              <h2>User Id: {user.uid}</h2>
-              <Logout onLogout={handleLogout} />
+              <div>
+                <CreateRoom />
+                <RoomList onRoomSelect={setCurrentRoomId} />
+              </div>
+              <div className="main__rooms__user">
+                <div className="main__rooms__user__info">
+                  <img
+                    className="main__rooms__user__image"
+                    src={user.photoURL}
+                    alt="profilePicture"
+                  />
+                  <div className="main__rooms__user__info__text">
+                    <h2 className="main__rooms__user__name">
+                      {user.displayName}
+                    </h2>
+                    <h2 className="main__rooms__user__uid">{user.uid}</h2>
+                  </div>
+                </div>
+                <Logout onLogout={handleLogout} />
+              </div>
             </div>
 
             <div className="main__chat">

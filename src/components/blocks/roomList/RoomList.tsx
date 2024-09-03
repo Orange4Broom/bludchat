@@ -102,25 +102,35 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
           <DeleteRoomButton roomId={selectedRoom.id} />
         </div>
       ) : null}
-
-      {rooms.map((room) => (
-        <div
-          className="roomlist__card"
-          onClick={() => onRoomSelect(room.id)}
-          key={room.id}
-        >
-          <div className="roomlist__card__info">
-            <img
-              className="roomlist__card__image"
-              src={room.roomURL}
-              alt="room profile picture"
-              style={{ width: "32px", height: "32px" }}
-            />
-            <h3 className="roomlist__card__name">{room.name}</h3>
+      <h3>Rooms</h3>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          height: "600px",
+          overflowY: "auto",
+        }}
+      >
+        {rooms.map((room) => (
+          <div
+            className="roomlist__card"
+            onClick={() => onRoomSelect(room.id)}
+            key={room.id}
+          >
+            <div className="roomlist__card__info">
+              <img
+                className="roomlist__card__image"
+                src={room.roomURL}
+                alt="room profile picture"
+                style={{ width: "32px", height: "32px" }}
+              />
+              <h3 className="roomlist__card__name">{room.name}</h3>
+            </div>
+            <DeleteRoomButton roomId={room.id} />
           </div>
-          <DeleteRoomButton roomId={room.id} />
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
