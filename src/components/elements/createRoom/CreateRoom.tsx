@@ -28,7 +28,7 @@ export const CreateRoom: React.FC = () => {
         <input
           className="createroom__url"
           type="text"
-          placeholder="Enter link for room's profile picture"
+          placeholder="Enter link for room profile picture"
           value={roomURL}
           onChange={(e) => setRoomURL(e.target.value)}
         />
