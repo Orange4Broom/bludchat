@@ -77,7 +77,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   }, [messages]);
 
   const isLongMessage = (text: string) => {
-    return text.length > 100 || text.includes(" "); // Adjust the condition as needed
+    return text.length > 100; // Adjust the condition as needed
   };
 
   return (
