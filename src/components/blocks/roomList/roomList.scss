@@ -9,6 +9,15 @@
   padding: 10px 10px 0 10px;
   overflow-y: auto;
 
+&__list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    height: calc(100vh - 460px);
+    overflow-y: auto;
+  }
+
   &__mid {
     display: flex;
     align-items: center;

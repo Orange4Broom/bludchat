@@ -103,15 +103,7 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
         </div>
       ) : null}
       <h3>Rooms</h3>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          height: "600px",
-          overflowY: "auto",
-        }}
-      >
+      <div className="roomlist__list">
         {rooms.map((room) => (
           <div
             className="roomlist__card"
