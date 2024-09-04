@@ -38,6 +38,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     name: string;
     roomURL: string;
   }>({ name: "", roomURL: "" });
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // State for image preview
   const currentUser = auth.currentUser as User;
   const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
@@ -78,6 +79,29 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
 
   const isLongMessage = (text: string) => {
     return text.length > 100; // Adjust the condition as needed
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && isImageFile(file.name)) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
+  const handleRemovePreview = () => {
+    setImagePreview(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendMessage(e);
+    handleRemovePreview();
   };
 
   return (
@@ -164,14 +188,49 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           </div>
         ))}
       </div>
-      <form onSubmit={sendMessage}>
-        <input
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message"
-        />
-        <button type="submit">Send</button>
-        <input type="file" id="fileInput" />
+      <form className="messageinput" onSubmit={handleSubmit}>
+        <label className="messageinput__file">
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }} // Hide the default file input
+            onChange={handleFileChange} // Add your file change handler
+          />
+          <Icon name="paperclip" type="fas" />{" "}
+          {/* Assuming you are using Font Awesome for the icon */}
+        </label>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            width: "100%",
+          }}
+        >
+          {imagePreview && (
+            <div className="image-previews">
+              <div className="image-preview">
+                <img src={imagePreview} alt="Preview" />
+                <button
+                  type="button"
+                  onClick={handleRemovePreview}
+                  className="image-preview__remove"
+                >
+                  <Icon name="times" type="fas" />
+                </button>
+              </div>
+            </div>
+          )}
+          <input
+            className="messageinput__input"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message"
+          />
+        </div>
+        <button className="messageinput__submit" type="submit">
+          <Icon name="paper-plane" type="fas" />
+        </button>
       </form>
     </>
   );
