@@ -82,7 +82,7 @@ export const FriendList: React.FC<FriendListProps> = ({
                 (e.target as HTMLImageElement).src = "defaultProfilePictureUrl"; // Fallback image
               }}
             />
-            {friend.displayName}{" "}
+            {friend.displayName}
             {!handleFriendInRoom(friend.uid) &&
             currentUser.uid === roomCreatorId ? (
               <>

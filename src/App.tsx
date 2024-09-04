@@ -15,6 +15,9 @@ import { AddFriend } from "./components/blocks/friendList/AddFriend";
 import { FriendList } from "./components/blocks/friendList/FriendList";
 import { User } from "./typings/User";
 import { useAddUserToRoom } from "@hooks/room/useAddUserToRoom";
+import { Icon } from "@elements/icon/Icon";
+
+import { useToastify } from "@hooks/useToastify";
 
 export const App = () => {
   const {
@@ -28,6 +31,7 @@ export const App = () => {
   } = useAuthHandlers();
   const currentUser = auth.currentUser as User;
   const { handleAddUser } = useAddUserToRoom(currentRoomId || "");
+  const { notify } = useToastify();
 
   useEffect(() => {
     openChatWithNewestMessage();
@@ -95,7 +99,18 @@ export const App = () => {
                     <h2 className="main__rooms__user__name">
                       {user.displayName}
                     </h2>
-                    <h2 className="main__rooms__user__uid">{user.uid}</h2>
+                    <h2 className="main__rooms__user__uid">
+                      {user.uid.substring(0, 16)}...
+                      <button
+                        className="main__rooms__user__uid__copy"
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.uid);
+                          notify("success", "Copied to clipboard");
+                        }}
+                      >
+                        <Icon name="copy" type="fas" />{" "}
+                      </button>
+                    </h2>
                   </div>
                 </div>
                 <Logout onLogout={handleLogout} />
