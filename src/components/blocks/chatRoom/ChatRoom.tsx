@@ -38,11 +38,18 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     name: string;
     roomURL: string;
   }>({ name: "", roomURL: "" });
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // State for image preview
   const currentUser = auth.currentUser as User;
-  const { newMessage, setNewMessage, sendMessage } = useSendMessage(roomId);
+  const {
+    newMessage,
+    setNewMessage,
+    sendMessage,
+    handleFileChange,
+    handleRemovePreview,
+    imagePreview,
+  } = useSendMessage(roomId);
   const { isImageFile, isVideoFile, isValidURL } = useFileValidation();
   const { roomCreatorId } = useFetchMembers(roomId);
+  const [openRoomDetails, setOpenRoomDetails] = useState<boolean>(false);
 
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -81,23 +88,6 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     return text.length > 100; // Adjust the condition as needed
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && isImageFile(file.name)) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
-  };
-
-  const handleRemovePreview = () => {
-    setImagePreview(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await sendMessage(e);
@@ -106,7 +96,10 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
 
   return (
     <>
-      <div className="room__details">
+      <div className={`room__details${openRoomDetails ? "" : "__closed"}`}>
+        <button onClick={() => setOpenRoomDetails(!openRoomDetails)}>
+          <Icon name="xmark" type="fas" />{" "}
+        </button>
         <img
           src={roomDetails.roomURL}
           alt="Room Profile"
@@ -127,8 +120,13 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           />
           <h2 className="chat__nav__name">{roomDetails.name}</h2>
         </div>
-        <button className="chat__nav__menubutton">
-          <Icon name="bars" type="fas" />{" "}
+        <button
+          className={`chat__nav__menubutton${
+            openRoomDetails ? "__closed" : ""
+          }`}
+          onClick={() => setOpenRoomDetails(!openRoomDetails)}
+        >
+          <Icon name="bars" type="fas" />
         </button>
       </div>
       <div className="chat" ref={chatRef}>
