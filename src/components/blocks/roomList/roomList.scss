@@ -12,7 +12,7 @@
 &__list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    
     width: 100%;
     height: calc(100vh - 460px);
     overflow-y: auto;
@@ -118,10 +118,10 @@
     gap: 10px;
     width: 100%;
     height: auto;
-    padding: 10px 10px;
+    padding: 10px 0px;
     border: none;
     border-radius: 6px;
-    background-color: #2f2f2f;
+    
     color: rgba(255, 255, 255, 0.86);
     cursor: pointer;
     transition: background-color 0.3s;

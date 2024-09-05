@@ -117,7 +117,11 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
                 alt="room profile picture"
                 style={{ width: "32px", height: "32px" }}
               />
-              <h3 className="roomlist__card__name">{room.name}</h3>
+              <h3 className="roomlist__card__name">
+                {room.name.length >= 18
+                  ? `${room.name.substring(0, 18)}...`
+                  : room.name}
+              </h3>
             </div>
             <DeleteRoomButton roomId={room.id} />
           </div>
