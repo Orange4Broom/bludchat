@@ -14,6 +14,7 @@ import { useFetchMembers } from "@/hooks/room/useFetchMembers"; // Assuming this
 import { User } from "@typings/User";
 import { FriendListProps } from "@typings/Friend";
 import { auth } from "@/firebase/firebase";
+import { Icon } from "@/components/elements/icon/Icon";
 
 export const FriendList: React.FC<FriendListProps> = ({
   uid,
@@ -77,45 +78,51 @@ export const FriendList: React.FC<FriendListProps> = ({
               src={friend.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
-              onError={(e) => {
-                console.error("Error loading image:", friend.photoURL);
-                (e.target as HTMLImageElement).src = "defaultProfilePictureUrl"; // Fallback image
-              }}
             />
             {friend.displayName}
             {!handleFriendInRoom(friend.uid) &&
             currentUser.uid === roomCreatorId ? (
               <>
-                <button onClick={() => handleAddToRoom(friend.uid)}>
-                  Add to Room
-                </button>
-                <button
-                  onClick={() => startChatWithFriend(friend)}
-                  disabled={chatLoading}
-                >
-                  Start Chat
-                </button>
-                <button
-                  onClick={() => removeFriend(friend.uid, setFriends)}
-                  disabled={removeLoading}
-                >
-                  Remove Friend
-                </button>
+                <abbr title="Add friend to room">
+                  <button onClick={() => handleAddToRoom(friend.uid)}>
+                    <Icon name="user-plus" type="fas" />
+                  </button>
+                </abbr>
+                <abbr title="Start chat with user">
+                  <button
+                    onClick={() => startChatWithFriend(friend)}
+                    disabled={chatLoading}
+                  >
+                    <Icon name="message" type="fas" />
+                  </button>
+                </abbr>
+                <abbr title="Remove user from friends">
+                  <button
+                    onClick={() => removeFriend(friend.uid, setFriends)}
+                    disabled={removeLoading}
+                  >
+                    <Icon name="user-minus" type="fas" />
+                  </button>
+                </abbr>
               </>
             ) : (
               <>
-                <button
-                  onClick={() => startChatWithFriend(friend)}
-                  disabled={chatLoading}
-                >
-                  Start Chat
-                </button>
-                <button
-                  onClick={() => removeFriend(friend.uid, setFriends)}
-                  disabled={removeLoading}
-                >
-                  Remove Friend
-                </button>
+                <abbr title="Start chat with user">
+                  <button
+                    onClick={() => startChatWithFriend(friend)}
+                    disabled={chatLoading}
+                  >
+                    <Icon name="message" type="fas" />
+                  </button>
+                </abbr>
+                <abbr title="Remove user from Friends">
+                  <button
+                    onClick={() => removeFriend(friend.uid, setFriends)}
+                    disabled={removeLoading}
+                  >
+                    <Icon name="user-minus" type="fas" />
+                  </button>
+                </abbr>
               </>
             )}
           </div>
