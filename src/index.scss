@@ -184,7 +184,7 @@ img {
     align-items: space-between;
     justify-content: space-between;
     gap: 20px;
-    width: 400px;
+    width: 340px;
     height: 100%;
     background-color: #242424;
 
@@ -265,7 +265,7 @@ img {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    flex-grow: 1;
+    width: calc(100% - 680px);
     height: 100%;
   }
 
@@ -274,9 +274,26 @@ img {
     flex-direction: column;
     align-items: start;
     gap: 20px;
-    min-width: 400px;
+    width: 340px;
     height: 100%;
     padding: 10px;
     background-color: #242424;
+  }
+}
+
+
+@media screen and (max-width: 1200px) {
+  .main {
+    &__rooms {
+      display: none;
+    }
+
+    &__chat {
+      width: 100%;
+    }
+
+    &__friends {
+      display: none;
+    }
   }
 }

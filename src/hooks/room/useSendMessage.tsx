@@ -10,6 +10,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export const useSendMessage = (roomId: string) => {
   const [newMessage, setNewMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const firestore = getFirestore();
   const auth = getAuth();
   const storage = getStorage();
@@ -31,8 +33,6 @@ export const useSendMessage = (roomId: string) => {
 
     const { uid, photoURL } = auth.currentUser!;
     const text = newMessage;
-    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
-    const file = fileInput?.files?.[0];
 
     if (!text && !file) {
       return;
@@ -52,10 +52,35 @@ export const useSendMessage = (roomId: string) => {
     });
 
     setNewMessage("");
-    if (fileInput) {
-      fileInput.value = "";
+    setFile(null);
+    setImagePreview(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setImagePreview(null);
     }
   };
 
-  return { newMessage, setNewMessage, sendMessage };
+  const handleRemovePreview = () => {
+    setFile(null);
+    setImagePreview(null);
+  };
+
+  return {
+    newMessage,
+    setNewMessage,
+    sendMessage,
+    handleFileChange,
+    handleRemovePreview,
+    imagePreview,
+  };
 };
