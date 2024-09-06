@@ -102,7 +102,7 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
           <DeleteRoomButton roomId={selectedRoom.id} />
         </div>
       ) : null}
-      <h3 style={{ padding: "10px" }}>Rooms</h3>
+      <h3 style={{ padding: " 0 10px" }}>Rooms</h3>
       <div className="roomlist__list">
         {rooms.map((room) => (
           <div
