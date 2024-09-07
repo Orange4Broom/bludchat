@@ -6,12 +6,11 @@ export const useAddUserToRoom = (roomId: string) => {
   const [userId, setUserId] = useState("");
   const notify = useToastify().notify;
 
-  const handleAddUser = async (uid: string) => {
-    if (!uid) return;
+  const handleAddUser = async () => {
     const firestore = getFirestore();
     const roomRef = doc(firestore, "rooms", roomId);
     await updateDoc(roomRef, {
-      members: arrayUnion(uid),
+      members: arrayUnion(userId),
     });
     setUserId("");
     notify("success", "User added successfully");
