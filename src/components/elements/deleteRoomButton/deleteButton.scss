@@ -1,16 +1,35 @@
-.delete {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: white;
-  background-color: #ff4d4d;
-  transition: background-color 0.3s;
-
+.delete-button {
   &:hover {
     background-color: #ff6666;
   }
 }
+
+.slim {
+      display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: auto;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    background-color: #ff4d4d;
+    transition: background-color 0.3s;
+  }
+
+  .wide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+     width: 100%;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    background-color: #ff4d4d;
+    transition: background-color 0.3s;
+  }
