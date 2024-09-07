@@ -16,20 +16,24 @@ import { Room, RoomListProps } from "@typings/Room";
 
 import "./roomList.scss";
 import { Icon } from "@/components/elements/icon/Icon";
+import { User } from "@/typings/User";
 
 export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const firestore = getFirestore();
   const auth = getAuth();
-  const user = auth.currentUser;
+  const currentUser = auth.currentUser as User;
   const [searchedRoom, setSearchedRoom] = useState<string>("");
   const [selectedRoomId, setSelectedRoomId] = useState<string>("");
 
   useEffect(() => {
-    if (!user) return;
+    if (!currentUser) return;
 
     const roomsRef = collection(firestore, "rooms");
-    const q = query(roomsRef, where("members", "array-contains", user.uid));
+    const q = query(
+      roomsRef,
+      where("members", "array-contains", currentUser.uid)
+    );
     const unsubscribe = onSnapshot(
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
@@ -99,7 +103,9 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
             />
             <p className="roomlist__details__name">{selectedRoom.name}</p>
           </div>
-          <DeleteRoomButton roomId={selectedRoom.id} />
+          {currentUser.uid === selectedRoom.creatorId && (
+            <DeleteRoomButton roomId={selectedRoom.id} width="slim" />
+          )}
         </div>
       ) : null}
       <h3 style={{ padding: " 0 10px" }}>Rooms</h3>
@@ -123,7 +129,6 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
                   : room.name}
               </h3>
             </div>
-            <DeleteRoomButton roomId={room.id} />
           </div>
         ))}
       </div>
