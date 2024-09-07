@@ -15,7 +15,7 @@ import {
   QuerySnapshot,
 } from "firebase/firestore";
 
-export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
+export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
   const [searchFirends, setSearchFirends] = useState<User[]>([]);
   const { members, roomCreatorId } = useFetchMembers(roomId);

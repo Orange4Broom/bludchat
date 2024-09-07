@@ -14,7 +14,7 @@ import { initializeApp } from "firebase/app";
 
 import { firebaseConfig } from "@fbase/firebase";
 import { AddUserToRoom } from "@blocks/addUserToRoom/AddUserToRoom";
-import { UsersRoomList } from "@blocks/userRoomList/UsersRoomList";
+import { RoomMembers } from "@/components/blocks/roomMembers/RoomMembers";
 
 import { useSendMessage } from "@/hooks/room/useSendMessage";
 import { useFileValidation } from "@/hooks/room/useFileValidation";
@@ -115,7 +115,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
         </div>
         {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
         {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
-        <UsersRoomList roomId={roomId} />
+        <RoomMembers roomId={roomId} />
         <div
           style={{
             display: "flex",
