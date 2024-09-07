@@ -14,7 +14,6 @@ import { ToastContainer } from "react-toastify";
 import { AddFriend } from "./components/blocks/friendList/AddFriend";
 import { FriendList } from "./components/blocks/friendList/FriendList";
 import { User } from "./typings/User";
-import { useAddUserToRoom } from "@hooks/room/useAddUserToRoom";
 import { Icon } from "@elements/icon/Icon";
 
 import { useToastify } from "@hooks/useToastify";
@@ -30,7 +29,6 @@ export const App = () => {
     openChatWithNewestMessage,
   } = useAuthHandlers();
   const currentUser = auth.currentUser as User;
-  const { handleAddUser } = useAddUserToRoom(currentRoomId || "");
   const { notify } = useToastify();
 
   useEffect(() => {
@@ -130,7 +128,6 @@ export const App = () => {
               <FriendList
                 uid={currentUser.uid}
                 displayName={currentUser.displayName || "Nameless User"}
-                onSelectFriend={handleAddUser}
                 roomId={currentRoomId || ""}
               />
             </div>
