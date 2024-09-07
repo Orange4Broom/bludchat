@@ -51,8 +51,7 @@ export const CreateRoom: React.FC = () => {
           justifyContent: "flex-start",
           alignItems: "center",
           gap: "10px",
-          height: "50px",
-          padding: "20px 10px",
+          padding: "10px 10px 20px 10px",
         }}
       >
         <h3 className="createroom__title">Create Room</h3>
