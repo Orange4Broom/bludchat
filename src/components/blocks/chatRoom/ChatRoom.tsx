@@ -27,6 +27,8 @@ import { useFetchMembers } from "@/hooks/room/useFetchMembers";
 import { User } from "@/typings/User";
 import { UpdateRoom } from "@/components/elements/updateRoom/UpdateRoom";
 import { Icon } from "@/components/elements/icon/Icon";
+import { LeaveRoomButton } from "@/components/elements/leaveRoomButton/LeaveRoomButton";
+import { DeleteRoomButton } from "@/components/elements/deleteRoomButton/DeleteRoomButton";
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
@@ -97,18 +99,40 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   return (
     <>
       <div className={`room__details${openRoomDetails ? "" : "__closed"}`}>
-        <button onClick={() => setOpenRoomDetails(!openRoomDetails)}>
+        <button
+          className="room__details__close-button"
+          onClick={() => setOpenRoomDetails(!openRoomDetails)}
+        >
           <Icon name="xmark" type="fas" />{" "}
         </button>
-        <img
-          src={roomDetails.roomURL}
-          alt="Room Profile"
-          style={{ width: "100px", height: "100px" }}
-        />
-        <h2 className="room__details__name">{roomDetails.name}</h2>
+        <div className="room__details__info">
+          <img
+            className="room__details__image"
+            src={roomDetails.roomURL}
+            alt="Room Profile"
+          />
+          <h2 className="room__details__name">{roomDetails.name}</h2>
+        </div>
         {currentUser.uid === roomCreatorId && <UpdateRoom roomId={roomId} />}
         {currentUser.uid === roomCreatorId && <AddUserToRoom roomId={roomId} />}
         <UsersRoomList roomId={roomId} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            width: "100%",
+          }}
+        >
+          {currentUser.uid === roomCreatorId && (
+            <DeleteRoomButton
+              roomId={roomId}
+              buttonText="Delete room"
+              width="wide"
+            />
+          )}
+          <LeaveRoomButton uid={currentUser.uid} roomId={roomId} />
+        </div>
       </div>
 
       <div className="chat__nav">
