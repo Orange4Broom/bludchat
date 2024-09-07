@@ -76,11 +76,10 @@ export const CreateRoom: React.FC = () => {
           <input
             type="file"
             id="fileInput"
-            style={{ display: "none" }} // Hide the default file input
-            onChange={handleFileChange} // Add your file change handler
+            style={{ display: "none" }}
+            onChange={handleFileChange}
           />
-          <Icon name="paperclip" type="fas" />{" "}
-          {/* Assuming you are using Font Awesome for the icon */}
+          <Icon name="paperclip" type="fas" />
           Choose a profile picture
         </label>
         {imagePreview && (
