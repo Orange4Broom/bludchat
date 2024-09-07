@@ -17,15 +17,14 @@ import { auth } from "@/firebase/firebase";
 import { Icon } from "@/components/elements/icon/Icon";
 
 import "./friendList.scss";
+import { useAddUserToRoom } from "@/hooks/room/useAddUserToRoom";
 
 export const FriendList: React.FC<FriendListProps> = ({
   uid,
   displayName,
-  onSelectFriend,
   roomId,
 }) => {
   const [friends, setFriends] = useState<User[]>([]);
-  const [updateFriends, setUpdateFriends] = useState(false);
   const firestore = getFirestore();
   const { startChatWithFriend, loading: chatLoading } = useStartChatWithFriend(
     uid,
@@ -34,6 +33,11 @@ export const FriendList: React.FC<FriendListProps> = ({
   const { removeFriend, loading: removeLoading } = useRemoveFriend(uid);
   const { members, roomCreatorId } = useFetchMembers(roomId);
   const currentUser = auth.currentUser as User;
+  const {
+    handleAddUser,
+    setUserId,
+    loading: addLoading,
+  } = useAddUserToRoom(roomId);
 
   useEffect(() => {
     if (!uid) {
@@ -57,17 +61,14 @@ export const FriendList: React.FC<FriendListProps> = ({
     );
 
     return () => unsubscribe();
-  }, [uid, firestore, updateFriends]);
-
-  const handleAddToRoom = (friendUid: string) => {
-    if (onSelectFriend) {
-      onSelectFriend(friendUid);
-      setUpdateFriends((prev) => !prev); // Toggle updateFriends to trigger re-fetch
-    }
-  };
+  }, [uid, firestore]);
 
   const handleFriendInRoom = (friendUid: string) => {
     return members.some((friend) => friend.uid === friendUid);
+  };
+
+  const handleSubmit = () => {
+    handleAddUser();
   };
 
   return (
@@ -95,7 +96,10 @@ export const FriendList: React.FC<FriendListProps> = ({
                   <abbr title="Add friend to room">
                     <button
                       className="friendlist__card__option"
-                      onClick={() => handleAddToRoom(friend.uid)}
+                      onClick={() => {
+                        setUserId(friend.uid), handleSubmit();
+                      }}
+                      disabled={addLoading}
                     >
                       <Icon name="user-plus" type="fas" />
                     </button>

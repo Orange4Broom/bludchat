@@ -14,10 +14,11 @@ import {
   onSnapshot,
   QuerySnapshot,
 } from "firebase/firestore";
+import { useAddUserToRoom } from "@/hooks/room/useAddUserToRoom";
 
 export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
-  const [searchFirends, setSearchFirends] = useState<User[]>([]);
+  const [searchFriends, setSearchFriends] = useState<User[]>([]);
   const { members, roomCreatorId } = useFetchMembers(roomId);
   const fetchedFriends = useFetchFriends();
   const { handleAddUserToRoom, loading: addLoading } =
@@ -26,9 +27,22 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
     useRemoveUserFromRoom(roomId);
   const currentUser = auth.currentUser as User;
   const [findedFriend, setFindedFriend] = useState<string>("");
+  const [findedMember, setFindedMember] = useState<string>("");
   const [selectedFriendKey, setSelectedFriendKey] = useState<string | null>(
     null
   );
+  const [selectedMemberKey, setSelectedMemberKey] = useState<string | null>(
+    null
+  );
+
+  const {
+    handleAddUser,
+    setUserId,
+    userId,
+    loading: AddLoading,
+  } = useAddUserToRoom(roomId);
+
+  console.log(userId);
 
   useEffect(() => {
     setFriends(fetchedFriends);
@@ -48,7 +62,7 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
           ...doc.data(),
           uid: doc.id,
         })) as User[];
-        setSearchFirends(data);
+        setSearchFriends(data);
       },
       (error) => {
         console.error("Error fetching friends:", error);
@@ -58,41 +72,59 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
     return () => unsubscribe();
   }, [currentUser.uid]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFriendInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFindedFriend(value);
 
-    const selectedFriend = searchFirends.find(
+    const selectedFriend = searchFriends.find(
       (friend) => friend.displayName === value
     );
     if (selectedFriend) {
       setSelectedFriendKey(selectedFriend.uid);
+      setUserId(selectedFriend.uid);
     } else {
       setSelectedFriendKey(null);
     }
   };
 
+  const handleMemberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFindedMember(value);
+
+    const selectedMember = members.find(
+      (member) => member.displayName === value
+    );
+    if (selectedMember) {
+      setSelectedMemberKey(selectedMember.uid);
+    } else {
+      setSelectedMemberKey(null);
+    }
+  };
+
   return (
-    <>
-      <h3>Room Members</h3>
-      <h4>Search room members</h4>
+    <div className="room-members">
+      <h3 className="room-members__header">Room Members</h3>
+      <h4 className="room-members__subheader">Search for friends to add</h4>
       <input
+        className="room-members__input"
         type="text"
         list="friends"
         value={findedFriend}
-        onChange={handleInputChange}
-        placeholder="Search for a room members"
+        onChange={handleFriendInputChange}
+        placeholder="Search friends"
       />
       <datalist id="friends">
-        {searchFirends.map((friend) => (
-          <option key={friend.uid} value={friend.displayName} />
-        ))}
+        {searchFriends.map((friend) =>
+          members.some((member) => member.uid === friend.uid) ? null : (
+            <option key={friend.uid} value={friend.displayName} />
+          )
+        )}
       </datalist>
       {selectedFriendKey && (
         <>
           <img
             src={
-              searchFirends.find((friend) => friend.uid === selectedFriendKey)
+              searchFriends.find((friend) => friend.uid === selectedFriendKey)
                 ?.photoURL
             }
             alt="profilePicture"
@@ -100,43 +132,82 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
           />
           <p>
             {
-              searchFirends.find((friend) => friend.uid === selectedFriendKey)
+              searchFriends.find((friend) => friend.uid === selectedFriendKey)
                 ?.displayName
             }
           </p>
-          {!friends.includes(selectedFriendKey) &&
+          {!members.find((member) => member.uid === selectedFriendKey) &&
           selectedFriendKey !== currentUser.uid ? (
-            <button
-              onClick={() => handleAddUserToRoom(selectedFriendKey)}
-              disabled={addLoading}
-            >
+            <button onClick={handleAddUser} disabled={AddLoading}>
               Add User to room
-            </button>
-          ) : currentUser.uid === roomCreatorId &&
-            selectedFriendKey !== currentUser.uid &&
-            members.some((member) => member.uid === selectedFriendKey) ? (
-            <button
-              onClick={() => {
-                handleRemoveUserFromRoom(selectedFriendKey);
-                setFindedFriend("");
-                setSelectedFriendKey(null);
-              }}
-              disabled={removeLoading}
-            >
-              Remove user from room
             </button>
           ) : null}
         </>
       )}
-      <ul>
+      <h4 className="room-members__subheader">Search for room members</h4>
+      <input
+        className="room-members__input"
+        type="text"
+        list="room-members"
+        value={findedMember}
+        onChange={handleMemberInputChange}
+        placeholder="Search members"
+      />
+      <datalist id="room-members">
+        {members.map((member) =>
+          member.uid !== currentUser.uid ? (
+            <option key={member.uid} value={member.displayName} />
+          ) : null
+        )}
+      </datalist>
+      {selectedMemberKey && (
+        <>
+          <img
+            src={
+              members.find((member) => member.uid === selectedMemberKey)
+                ?.photoURL
+            }
+            alt="profilePicture"
+            style={{ height: "32px", width: "32px" }}
+          />
+          <p>
+            {
+              members.find((member) => member.uid === selectedMemberKey)
+                ?.displayName
+            }
+          </p>
+          {!friends.includes(selectedMemberKey) &&
+          selectedMemberKey !== currentUser.uid ? (
+            <button
+              onClick={() => handleAddUserToRoom(selectedMemberKey)}
+              disabled={addLoading}
+            >
+              Add to friends
+            </button>
+          ) : currentUser.uid === roomCreatorId &&
+            selectedMemberKey !== currentUser.uid ? (
+            <button
+              onClick={() => handleRemoveUserFromRoom(selectedMemberKey)}
+              disabled={removeLoading}
+            >
+              Remove from room
+            </button>
+          ) : null}
+        </>
+      )}
+      <div>
         {members.map((member: User) => (
-          <li key={member.uid}>
+          <div key={member.uid}>
             <img
               src={member.photoURL}
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {member.displayName}
+            {member.displayName === currentUser.displayName ? (
+              <p>{member.displayName} (You)</p>
+            ) : (
+              <p>{member.displayName}</p>
+            )}
             {!friends.includes(member.uid) && member.uid !== currentUser.uid ? (
               <button
                 onClick={() => handleAddUserToRoom(member.uid)}
@@ -154,9 +225,9 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
                 </button>
               )
             )}
-          </li>
+          </div>
         ))}
-      </ul>
-    </>
+      </div>
+    </div>
   );
 };
