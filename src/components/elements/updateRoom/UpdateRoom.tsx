@@ -78,12 +78,10 @@ export const UpdateRoom: React.FC<UpdateRoomProps> = ({ roomId }) => {
           <input
             type="file"
             id="fileInput"
-            style={{ display: "none" }} // Hide the default file input
-            onChange={handleFileChange} // Add your file change handler
+            style={{ display: "none" }}
+            onChange={handleFileChange}
           />
-          <Icon name="paperclip" type="fas" />{" "}
-          {/* Assuming you are using Font Awesome for the icon */}
-          Choose a profile picture
+          <Icon name="paperclip" type="fas" /> Choose a profile picture
         </label>
         {imagePreview && (
           <div className="roomimage__previews">

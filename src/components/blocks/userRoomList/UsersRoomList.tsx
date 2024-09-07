@@ -14,7 +14,6 @@ import {
   onSnapshot,
   QuerySnapshot,
 } from "firebase/firestore";
-import { LeaveRoomButton } from "@/components/elements/leaveRoomButton/LeaveRoomButton";
 
 export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
@@ -146,8 +145,7 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
                 Add Friend
               </button>
             ) : (
-              currentUser.uid === roomCreatorId &&
-              member.uid !== currentUser.uid && (
+              currentUser.uid === roomCreatorId && (
                 <button
                   onClick={() => handleRemoveUserFromRoom(member.uid)}
                   disabled={removeLoading}
@@ -159,7 +157,6 @@ export const UsersRoomList: React.FC<ChatRoomProps> = ({ roomId }) => {
           </li>
         ))}
       </ul>
-      <LeaveRoomButton uid={currentUser.uid} roomId={roomId} />
     </>
   );
 };
