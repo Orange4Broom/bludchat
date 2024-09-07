@@ -85,7 +85,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   }, [messages]);
 
   const isLongMessage = (text: string) => {
-    return text.length > 100; // Adjust the condition as needed
+    return text.length > 100;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,14 +120,30 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           />
           <h2 className="chat__nav__name">{roomDetails.name}</h2>
         </div>
-        <button
-          className={`chat__nav__menubutton${
-            openRoomDetails ? "__closed" : ""
-          }`}
-          onClick={() => setOpenRoomDetails(!openRoomDetails)}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "20px",
+          }}
         >
-          <Icon name="bars" type="fas" />
-        </button>
+          <button className="chat__nav__menubutton">
+            <Icon name="message" type="fas" />
+          </button>
+          <button className="chat__nav__menubutton">
+            <Icon name="user-group" type="fas" />
+          </button>
+          <button
+            className={`chat__nav__menubutton${
+              openRoomDetails ? "__closed" : ""
+            }`}
+            onClick={() => setOpenRoomDetails(!openRoomDetails)}
+          >
+            <Icon name="bars" type="fas" />
+          </button>
+        </div>
       </div>
       <div className="chat" ref={chatRef}>
         {messages.map((msg) => (
@@ -191,11 +207,10 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           <input
             type="file"
             id="fileInput"
-            style={{ display: "none" }} // Hide the default file input
-            onChange={handleFileChange} // Add your file change handler
+            style={{ display: "none" }}
+            onChange={handleFileChange}
           />
           <Icon name="paperclip" type="fas" />{" "}
-          {/* Assuming you are using Font Awesome for the icon */}
         </label>
         <div
           style={{
