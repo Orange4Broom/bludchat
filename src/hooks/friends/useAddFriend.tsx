@@ -5,12 +5,15 @@ import { useToastify } from "@hooks/useToastify";
 
 export const useAddFriend = () => {
   const [friendId, setFriendId] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
   const firestore = getFirestore();
   const auth = getAuth();
   const currentUser = auth.currentUser;
   const notify = useToastify().notify;
 
-  const addFriend = async () => {
+  const addFriend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
     if (!currentUser) {
       console.log("No user is authenticated");
       return;
@@ -51,11 +54,13 @@ export const useAddFriend = () => {
         }
       );
 
+      setFriendId("");
+      setLoading(false);
       notify("success", "Friend added successfully");
     } catch (error) {
       notify("error", "Failed to add friend");
     }
   };
 
-  return { friendId, setFriendId, addFriend };
+  return { friendId, setFriendId, addFriend, loading };
 };
