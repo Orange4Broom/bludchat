@@ -1,5 +1,7 @@
 import { arrayRemove, doc, getFirestore, updateDoc } from "firebase/firestore";
 
+import "./leaveRoomButton.scss";
+
 interface LeaveRoomButtonProps {
   uid: string;
   roomId: string;
@@ -23,5 +25,9 @@ export const LeaveRoomButton: React.FC<LeaveRoomButtonProps> = ({
     });
   };
 
-  return <button onClick={handleLeaveRoom}>Leave Room</button>;
+  return (
+    <button className="leavebutton" onClick={handleLeaveRoom}>
+      Leave Room
+    </button>
+  );
 };

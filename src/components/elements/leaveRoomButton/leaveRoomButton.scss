@@ -1,0 +1,17 @@
+.leavebutton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background-color: #3f3f3f;
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #4e4e4e;
+  }
+}
