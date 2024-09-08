@@ -67,7 +67,8 @@ export const FriendList: React.FC<FriendListProps> = ({
     return members.some((friend) => friend.uid === friendUid);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (friendId: string) => {
+    setUserId(friendId);
     handleAddUser();
   };
 
@@ -83,10 +84,11 @@ export const FriendList: React.FC<FriendListProps> = ({
                 alt="profilePicture"
                 style={{ height: "32px", width: "32px" }}
               />
-              <p className="friendlist__card__info__username">{`${friend.displayName.substring(
-                0,
-                14
-              )}...`}</p>
+              <p className="friendlist__card__info__username">
+                {friend.displayName.length > 16
+                  ? `${friend.displayName.substring(0, 16)}...`
+                  : friend.displayName}
+              </p>
             </div>
 
             <div className="friendlist__card__options">
@@ -96,9 +98,7 @@ export const FriendList: React.FC<FriendListProps> = ({
                   <abbr title="Add friend to room">
                     <button
                       className="friendlist__card__option"
-                      onClick={() => {
-                        setUserId(friend.uid), handleSubmit();
-                      }}
+                      onClick={() => handleSubmit(friend.uid)}
                       disabled={addLoading}
                     >
                       <Icon name="user-plus" type="fas" />
