@@ -35,7 +35,7 @@ export const useFetchMembers = (roomId: string) => {
     });
 
     return () => unsubscribe();
-  }, [roomId, firestore]);
+  }, [roomId, firestore, members]);
 
   return { members, roomCreatorId };
 };
