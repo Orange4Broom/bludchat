@@ -16,6 +16,9 @@ import {
 } from "firebase/firestore";
 import { useAddUserToRoom } from "@/hooks/room/useAddUserToRoom";
 
+import "./roomMembers.scss";
+import { Icon } from "@/components/elements/icon/Icon";
+
 export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [friends, setFriends] = useState<string[]>([]);
   const [searchFriends, setSearchFriends] = useState<User[]>([]);
@@ -38,11 +41,8 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
   const {
     handleAddUser,
     setUserId,
-    userId,
     loading: AddLoading,
   } = useAddUserToRoom(roomId);
-
-  console.log(userId);
 
   useEffect(() => {
     setFriends(fetchedFriends);
@@ -101,130 +101,260 @@ export const RoomMembers: React.FC<ChatRoomProps> = ({ roomId }) => {
     }
   };
 
+  const handleAddUserAction = () => {
+    handleAddUser();
+    clearUserSearch();
+  };
+
+  const clearUserSearch = () => {
+    setFindedFriend("");
+    setSelectedFriendKey(null);
+  };
+
+  const clearMemberSearch = () => {
+    setFindedMember("");
+    setSelectedMemberKey(null);
+  };
+
   return (
     <div className="room-members">
-      <h3 className="room-members__header">Room Members</h3>
       <h4 className="room-members__subheader">Search for friends to add</h4>
-      <input
-        className="room-members__input"
-        type="text"
-        list="friends"
-        value={findedFriend}
-        onChange={handleFriendInputChange}
-        placeholder="Search friends"
-      />
-      <datalist id="friends">
-        {searchFriends.map((friend) =>
-          members.some((member) => member.uid === friend.uid) ? null : (
-            <option key={friend.uid} value={friend.displayName} />
-          )
-        )}
-      </datalist>
+      <div className="room-members__mid">
+        <input
+          className="room-members__input"
+          type="text"
+          list="friends"
+          value={findedFriend}
+          onChange={handleFriendInputChange}
+          placeholder="Search friends"
+        />
+        <datalist id="friends">
+          {searchFriends.map((friend) =>
+            members.some((member) => member.uid === friend.uid) ? null : (
+              <option key={friend.uid} value={friend.displayName} />
+            )
+          )}
+        </datalist>
+        <abbr title="Clear search">
+          <button
+            className="room-members__clear-search"
+            onClick={() => clearUserSearch()}
+          >
+            <Icon name="xmark" type="fas" />{" "}
+          </button>
+        </abbr>
+      </div>
       {selectedFriendKey && (
-        <>
-          <img
-            src={
-              searchFriends.find((friend) => friend.uid === selectedFriendKey)
-                ?.photoURL
-            }
-            alt="profilePicture"
-            style={{ height: "32px", width: "32px" }}
-          />
-          <p>
-            {
-              searchFriends.find((friend) => friend.uid === selectedFriendKey)
-                ?.displayName
-            }
-          </p>
-          {!members.find((member) => member.uid === selectedFriendKey) &&
-          selectedFriendKey !== currentUser.uid ? (
-            <button onClick={handleAddUser} disabled={AddLoading}>
-              Add User to room
-            </button>
-          ) : null}
-        </>
-      )}
-      <h4 className="room-members__subheader">Search for room members</h4>
-      <input
-        className="room-members__input"
-        type="text"
-        list="room-members"
-        value={findedMember}
-        onChange={handleMemberInputChange}
-        placeholder="Search members"
-      />
-      <datalist id="room-members">
-        {members.map((member) =>
-          member.uid !== currentUser.uid ? (
-            <option key={member.uid} value={member.displayName} />
-          ) : null
-        )}
-      </datalist>
-      {selectedMemberKey && (
-        <>
-          <img
-            src={
-              members.find((member) => member.uid === selectedMemberKey)
-                ?.photoURL
-            }
-            alt="profilePicture"
-            style={{ height: "32px", width: "32px" }}
-          />
-          <p>
-            {
-              members.find((member) => member.uid === selectedMemberKey)
-                ?.displayName
-            }
-          </p>
-          {!friends.includes(selectedMemberKey) &&
-          selectedMemberKey !== currentUser.uid ? (
-            <button
-              onClick={() => handleAddUserToRoom(selectedMemberKey)}
-              disabled={addLoading}
-            >
-              Add to friends
-            </button>
-          ) : currentUser.uid === roomCreatorId &&
-            selectedMemberKey !== currentUser.uid ? (
-            <button
-              onClick={() => handleRemoveUserFromRoom(selectedMemberKey)}
-              disabled={removeLoading}
-            >
-              Remove from room
-            </button>
-          ) : null}
-        </>
-      )}
-      <div>
-        {members.map((member: User) => (
-          <div key={member.uid}>
+        <div className="room-members__selected-user">
+          <div className="room-members__selected-user__info">
             <img
-              src={member.photoURL}
+              className="room-members__selected-user__image"
+              src={
+                searchFriends.find((friend) => friend.uid === selectedFriendKey)
+                  ?.photoURL
+              }
               alt="profilePicture"
               style={{ height: "32px", width: "32px" }}
             />
-            {member.displayName === currentUser.displayName ? (
-              <p>{member.displayName} (You)</p>
-            ) : (
-              <p>{member.displayName}</p>
-            )}
-            {!friends.includes(member.uid) && member.uid !== currentUser.uid ? (
+            <p className="room-members__selected-user__name">
+              {
+                searchFriends.find((friend) => friend.uid === selectedFriendKey)
+                  ?.displayName
+              }
+            </p>
+          </div>
+          {!members.find((member) => member.uid === selectedFriendKey) &&
+          selectedFriendKey !== currentUser.uid ? (
+            <abbr title="Add user to room">
               <button
-                onClick={() => handleAddUserToRoom(member.uid)}
-                disabled={addLoading}
+                className="room-members__selected-user__add-to-room"
+                onClick={() => {
+                  handleAddUserAction();
+                }}
+                disabled={AddLoading}
               >
-                Add Friend
+                <Icon name="user-plus" type="fas" />
               </button>
-            ) : (
-              currentUser.uid === roomCreatorId && (
-                <button
-                  onClick={() => handleRemoveUserFromRoom(member.uid)}
-                  disabled={removeLoading}
-                >
-                  Remove user from room
-                </button>
-              )
-            )}
+            </abbr>
+          ) : null}
+        </div>
+      )}
+      <h4 className="room-members__subheader">Search for room members</h4>
+      <div className="room-members__mid">
+        <input
+          className="room-members__input"
+          type="text"
+          list="room-members"
+          value={findedMember}
+          onChange={handleMemberInputChange}
+          placeholder="Search members"
+        />
+        <datalist id="room-members">
+          {members.map((member) =>
+            member.uid !== currentUser.uid ? (
+              <option key={member.uid} value={member.displayName} />
+            ) : null
+          )}
+        </datalist>
+        <abbr title="Clear search">
+          <button
+            className="room-members__clear-search"
+            onClick={() => clearMemberSearch()}
+          >
+            <Icon name="xmark" type="fas" />{" "}
+          </button>
+        </abbr>
+      </div>
+      {selectedMemberKey && (
+        <div className="room-members__selected-member">
+          <div className="room-members__selected-member__info">
+            <img
+              className="room-members__selected-member__image"
+              src={
+                members.find((member) => member.uid === selectedMemberKey)
+                  ?.photoURL
+              }
+              alt="profilePicture"
+              style={{ height: "32px", width: "32px" }}
+            />
+            <p className="room-members__selected-member__name">
+              {
+                members.find((member) => member.uid === selectedMemberKey)
+                  ?.displayName
+              }
+            </p>
+          </div>
+          <div className="room-members__selected-member__buttons">
+            {!friends.includes(selectedMemberKey) &&
+            selectedMemberKey !== currentUser.uid ? (
+              <>
+                <abbr title="Add user to friends">
+                  <button
+                    className="room-members__selected-member__add-to-friends"
+                    onClick={() => {
+                      handleAddUserToRoom(selectedMemberKey),
+                        clearMemberSearch();
+                    }}
+                    disabled={addLoading}
+                  >
+                    <Icon name="user-plus" type="fas" />
+                  </button>
+                </abbr>
+                {currentUser.uid === roomCreatorId &&
+                selectedMemberKey !== currentUser.uid ? (
+                  <abbr title="Remove user from room">
+                    <button
+                      className="room-members__selected-member__remove-from-room"
+                      onClick={() => {
+                        handleRemoveUserFromRoom(selectedMemberKey),
+                          clearMemberSearch();
+                      }}
+                      disabled={removeLoading}
+                    >
+                      <Icon name="user-minus" type="fas" />
+                    </button>
+                  </abbr>
+                ) : null}
+              </>
+            ) : currentUser.uid === roomCreatorId &&
+              selectedMemberKey !== currentUser.uid ? (
+              <div className="room-members__selected-member__buttons">
+                <abbr title="Remove use from room">
+                  <button
+                    className="room-members__selected-member__remove-from-room"
+                    onClick={() => {
+                      handleRemoveUserFromRoom(selectedMemberKey),
+                        clearMemberSearch();
+                    }}
+                    disabled={removeLoading}
+                  >
+                    <Icon name="user-minus" type="fas" />
+                  </button>
+                </abbr>
+                {!friends.includes(selectedMemberKey) &&
+                selectedMemberKey !== currentUser.uid ? (
+                  <abbr title="Add user to friends">
+                    <button
+                      className="room-members__selected-member__add-to-friends"
+                      onClick={() => {
+                        handleAddUserToRoom(selectedMemberKey),
+                          clearMemberSearch();
+                      }}
+                      disabled={addLoading}
+                    >
+                      <Icon name="user-plus" type="fas" />
+                    </button>
+                  </abbr>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
+      <h3>Room members</h3>
+      <div className="room-members__list">
+        {members.map((member: User) => (
+          <div className="room-members__card" key={member.uid}>
+            <div className="room-members__card__info">
+              <img
+                className="room-members__card__image"
+                src={member.photoURL}
+                alt="profilePicture"
+                style={{ height: "32px", width: "32px" }}
+              />
+              {member.displayName === currentUser.displayName ? (
+                <p className="room-members__card__name">
+                  {`${member.displayName.substring(0, 16)}... (You)`}
+                </p>
+              ) : (
+                <p className="room-members__card__name">
+                  {member.displayName.length > 16
+                    ? `${member.displayName.substring(0, 16)}...`
+                    : member.displayName}
+                </p>
+              )}
+            </div>
+            <div className="room-members__card__buttons">
+              {!friends.includes(member.uid) &&
+              member.uid !== currentUser.uid ? (
+                <>
+                  <abbr title="Add user to friends">
+                    <button
+                      className="room-members__card__add-to-friends"
+                      onClick={() => handleAddUserToRoom(member.uid)}
+                      disabled={addLoading}
+                    >
+                      <Icon name="user-plus" type="fas" />
+                    </button>
+                  </abbr>
+                  {currentUser.uid === roomCreatorId && (
+                    <abbr title="Remove user from room">
+                      <button
+                        className="room-members__card__remove-from-room"
+                        onClick={() => handleRemoveUserFromRoom(member.uid)}
+                        disabled={removeLoading}
+                      >
+                        <Icon name="user-minus" type="fas" />
+                      </button>
+                    </abbr>
+                  )}
+                </>
+              ) : (
+                <>
+                  {currentUser.uid === roomCreatorId && (
+                    <abbr title="Remove user from room">
+                      <button
+                        className="room-members__card__remove-from-room"
+                        onClick={() => handleRemoveUserFromRoom(member.uid)}
+                        disabled={removeLoading}
+                      >
+                        <Icon name="user-minus" type="fas" />
+                      </button>
+                    </abbr>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
