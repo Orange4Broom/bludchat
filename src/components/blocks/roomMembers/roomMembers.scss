@@ -1,0 +1,190 @@
+.room-members {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+
+  &__mid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    padding: 0 10px;
+    outline: none;
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  &__clear-search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background-color: #3f3f3f;
+    color: rgba(255, 255, 255, 0.86);
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #5c5c5c;
+    }
+  }
+
+  &__selected-user, &__selected-member {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    padding: 10px;
+    color: rgba(255, 255, 255, 0.86);
+    background-color: #3f3f3f;
+
+    &__info {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.86);
+
+      // &:hover {
+      //   background-color: #5c5c5c;
+      // }
+    }
+
+    &__add-to-room, &__remove-from-room, &__add-to-friends {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2f2f2f;
+      color: rgba(255, 255, 255, 0.86);
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #5c5c5c;
+      }
+    }
+
+    &__buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      width: 100%;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0px;
+    width: 100%;
+    height: calc(100vh - 640px);
+    overflow-y: auto;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: auto;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.86);
+    background-color: #3f3f3f;
+
+    &__info {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    &__name {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+
+    &__buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    &__add-to-friends, &__remove-from-room {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #2f2f2f;
+      color: rgba(255, 255, 255, 0.86);
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #5c5c5c;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .room-members {
+    &__list {
+      height: calc(100vh - 500px);
+    }
+  }
+}
