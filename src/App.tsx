@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { auth } from "@fbase/firebase";
 
@@ -31,9 +31,12 @@ export const App = () => {
   const currentUser = auth.currentUser as User;
   const { notify } = useToastify();
 
+  const [openRoomList, setOpenRoomList] = useState<boolean>(true);
+  const [openFriendList, setOpenFriendList] = useState<boolean>(true);
+
   useEffect(() => {
     openChatWithNewestMessage();
-  }, [user]);
+  }, [user, openChatWithNewestMessage]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -62,6 +65,31 @@ export const App = () => {
     });
     return unsubscribe;
   }, [setUser]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1200px)");
+
+    const handleMediaQueryChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setOpenRoomList(false);
+        setOpenFriendList(false);
+      } else {
+        setOpenRoomList(true);
+        setOpenFriendList(true);
+      }
+    };
+
+    if (mediaQuery.matches) {
+      setOpenRoomList(false);
+      setOpenFriendList(false);
+    }
+
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+    };
+  }, []);
 
   return (
     <>
@@ -118,7 +146,13 @@ export const App = () => {
             <div className="main__chat">
               {currentRoomId && (
                 <>
-                  <ChatRoom roomId={currentRoomId} />
+                  <ChatRoom
+                    roomId={currentRoomId}
+                    openRoomList={openRoomList}
+                    openFriendList={openFriendList}
+                    setOpenRoomList={setOpenRoomList}
+                    setOpenFriendList={setOpenFriendList}
+                  />
                 </>
               )}
               {oneOnOneChatUser && <ChatRoom roomId={oneOnOneChatUser.uid} />}
