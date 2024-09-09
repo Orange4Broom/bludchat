@@ -34,7 +34,13 @@ const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const auth = getAuth(app);
 
-export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
+export const ChatRoom: React.FC<ChatRoomProps> = ({
+  roomId,
+  openRoomList,
+  openFriendList,
+  setOpenRoomList,
+  setOpenFriendList,
+}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [roomDetails, setRoomDetails] = useState<{
     name: string;
@@ -153,10 +159,18 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
             gap: "20px",
           }}
         >
-          <button className="chat__nav__menubutton">
+          <button
+            className={`chat__nav__menubutton${openRoomList ? "__closed" : ""}`}
+            onClick={() => setOpenRoomList?.(!openRoomList)}
+          >
             <Icon name="message" type="fas" />
           </button>
-          <button className="chat__nav__menubutton">
+          <button
+            className={`chat__nav__menubutton${
+              openFriendList ? "__closed" : ""
+            }`}
+            onClick={() => setOpenFriendList?.(!openFriendList)}
+          >
             <Icon name="user-group" type="fas" />
           </button>
           <button
