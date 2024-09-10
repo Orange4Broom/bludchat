@@ -30,6 +30,8 @@
     border-radius: 6px;
     color: rgba(255, 255, 255, 0.86);
     transition: background-color 0.3s;
+    background: none;
+    font-size: medium;
 
     &__info {
       display: flex;

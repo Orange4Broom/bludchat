@@ -77,7 +77,7 @@ export const FriendList: React.FC<FriendListProps> = ({
       <h3 className="friendlist__header">Friend List</h3>
       <div className="friendlist__list">
         {friends.map((friend) => (
-          <div key={friend.uid} className="friendlist__card">
+          <button key={friend.uid} className="friendlist__card">
             <div className="friendlist__card__info">
               <img
                 src={friend.photoURL}
@@ -146,7 +146,7 @@ export const FriendList: React.FC<FriendListProps> = ({
                 </>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
