@@ -41,7 +41,7 @@ export const App = () => {
 
   useEffect(() => {
     openChatWithNewestMessage();
-  }, [user, openChatWithNewestMessage]);
+  }, [user]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
