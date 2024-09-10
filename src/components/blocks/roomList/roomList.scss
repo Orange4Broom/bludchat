@@ -124,10 +124,21 @@
     border-radius: 6px;
     color: rgba(255, 255, 255, 0.86);
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease-in-out;
+    background: none;
+
+    span {
+      transition: all 0.3s ease-in-out;
+      color: #242424;
+      font-size: medium;
+    }
 
     &:hover {
       background-color: #3f3f3f;
+
+      span {
+        color: rgba(255, 255, 255, 0.86);
+      }
     }
 
     &__info {

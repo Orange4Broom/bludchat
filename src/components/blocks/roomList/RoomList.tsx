@@ -101,17 +101,25 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
               alt="roomPicture"
               style={{ width: "32px", height: "32px" }}
             />
-            <p className="roomlist__details__name">{selectedRoom.name}</p>
+            <p className="roomlist__details__name">
+              {selectedRoom.name.length >= 18
+                ? `${selectedRoom.name.substring(0, 18)}...`
+                : selectedRoom.name}
+            </p>
           </div>
           {currentUser.uid === selectedRoom.creatorId && (
-            <DeleteRoomButton roomId={selectedRoom.id} width="slim" />
+            <DeleteRoomButton
+              roomId={selectedRoom.id}
+              width="slim"
+              onDelete={clearSearch}
+            />
           )}
         </div>
       ) : null}
       <h3 style={{ padding: " 0 10px" }}>Rooms</h3>
       <div className="roomlist__list">
         {rooms.map((room) => (
-          <div
+          <button
             className="roomlist__card"
             onClick={() => onRoomSelect(room.id)}
             key={room.id}
@@ -129,7 +137,8 @@ export const RoomList: React.FC<RoomListProps> = ({ onRoomSelect }) => {
                   : room.name}
               </h3>
             </div>
-          </div>
+            <Icon name="angle-right" type="fas" />
+          </button>
         ))}
       </div>
     </div>
