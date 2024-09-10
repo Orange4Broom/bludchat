@@ -10,13 +10,16 @@ export const DeleteRoomButton: React.FC<ChatRoomProps> = ({
   roomId,
   buttonText,
   width,
+  onDelete,
 }) => {
   const { deleteRoom, loading } = useDeleteRoom();
 
   return (
     <button
       className={`delete-button ${width}`}
-      onClick={() => deleteRoom(roomId)}
+      onClick={() => {
+        deleteRoom(roomId), onDelete && onDelete();
+      }}
       disabled={loading}
     >
       {loading ? (
