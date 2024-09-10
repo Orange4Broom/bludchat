@@ -6,4 +6,5 @@ export interface ChatRoomProps {
   openFriendList?: boolean;
   handleOpenRoomList?: () => void;
   handleOpenFriendList?: () => void;
+  onDelete?: () => void;
 }
