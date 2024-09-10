@@ -4,6 +4,6 @@ export interface ChatRoomProps {
   width?: string;
   openRoomList?: boolean;
   openFriendList?: boolean;
-  setOpenRoomList?: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenFriendList?: React.Dispatch<React.SetStateAction<boolean>>;
+  handleOpenRoomList?: () => void;
+  handleOpenFriendList?: () => void;
 }

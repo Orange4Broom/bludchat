@@ -38,8 +38,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
   roomId,
   openRoomList,
   openFriendList,
-  setOpenRoomList,
-  setOpenFriendList,
+  handleOpenRoomList,
+  handleOpenFriendList,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [roomDetails, setRoomDetails] = useState<{
@@ -104,6 +104,10 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
 
   return (
     <>
+      <div
+        className="overlay"
+        style={{ display: openRoomDetails ? "flex" : "none" }}
+      ></div>
       <div className={`room__details${openRoomDetails ? "" : "__closed"}`}>
         <button
           className="room__details__close-button"
@@ -159,20 +163,22 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({
             gap: "20px",
           }}
         >
-          <button
-            className={`chat__nav__menubutton${openRoomList ? "__closed" : ""}`}
-            onClick={() => setOpenRoomList?.(!openRoomList)}
-          >
-            <Icon name="message" type="fas" />
-          </button>
-          <button
-            className={`chat__nav__menubutton${
-              openFriendList ? "__closed" : ""
-            }`}
-            onClick={() => setOpenFriendList?.(!openFriendList)}
-          >
-            <Icon name="user-group" type="fas" />
-          </button>
+          {openRoomList && (
+            <button
+              className="chat__nav__menubutton"
+              onClick={handleOpenRoomList}
+            >
+              <Icon name="message" type="fas" />
+            </button>
+          )}
+          {openFriendList && (
+            <button
+              className="chat__nav__menubutton"
+              onClick={handleOpenFriendList}
+            >
+              <Icon name="user-group" type="fas" />
+            </button>
+          )}
           <button
             className={`chat__nav__menubutton${
               openRoomDetails ? "__closed" : ""
