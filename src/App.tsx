@@ -11,12 +11,14 @@ import { ChatRoom } from "@blocks/chatRoom/ChatRoom";
 
 import { useAuthHandlers } from "@hooks/useAuthHandlers";
 import { ToastContainer } from "react-toastify";
-import { AddFriend } from "./components/blocks/friendList/AddFriend";
-import { FriendList } from "./components/blocks/friendList/FriendList";
+import { AddFriend } from "@blocks/friendList/AddFriend";
+import { FriendList } from "@blocks/friendList/FriendList";
 import { User } from "./typings/User";
 import { Icon } from "@elements/icon/Icon";
 
 import { useToastify } from "@hooks/useToastify";
+import { RoomListModal } from "@elements/roomListModal/RoomListModal";
+import { FriendListModal } from "@elements/friendListModal/FriendListModal";
 
 export const App = () => {
   const {
@@ -31,8 +33,11 @@ export const App = () => {
   const currentUser = auth.currentUser as User;
   const { notify } = useToastify();
 
-  const [openRoomList, setOpenRoomList] = useState<boolean>(true);
-  const [openFriendList, setOpenFriendList] = useState<boolean>(true);
+  const [openRoomList, setOpenRoomList] = useState<boolean>(false);
+  const [openFriendList, setOpenFriendList] = useState<boolean>(false);
+  const [showRoomListButton, setShowRoomListButton] = useState<boolean>(false);
+  const [showFriendListButton, setShowFriendListButton] =
+    useState<boolean>(false);
 
   useEffect(() => {
     openChatWithNewestMessage();
@@ -71,17 +76,20 @@ export const App = () => {
 
     const handleMediaQueryChange = (e: MediaQueryListEvent) => {
       if (e.matches) {
-        setOpenRoomList(false);
-        setOpenFriendList(false);
+        setShowRoomListButton(true);
+        setShowFriendListButton(true);
       } else {
-        setOpenRoomList(true);
-        setOpenFriendList(true);
+        setShowRoomListButton(false);
+        setShowFriendListButton(false);
       }
     };
 
     if (mediaQuery.matches) {
-      setOpenRoomList(false);
-      setOpenFriendList(false);
+      setShowRoomListButton(true);
+      setShowFriendListButton(true);
+    } else {
+      setShowRoomListButton(false);
+      setShowFriendListButton(false);
     }
 
     mediaQuery.addEventListener("change", handleMediaQueryChange);
@@ -90,6 +98,26 @@ export const App = () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange);
     };
   }, []);
+
+  const handleRoomListModalClose = () => {
+    setOpenRoomList(false);
+    setShowRoomListButton(true);
+  };
+
+  const handleRoomListModalOpen = () => {
+    setOpenRoomList(true);
+    setShowRoomListButton(false);
+  };
+
+  const handleFriendListModalClose = () => {
+    setOpenFriendList(false);
+    setShowFriendListButton(true);
+  };
+
+  const handleFriendListModalOpen = () => {
+    setOpenFriendList(true);
+    setShowFriendListButton(false);
+  };
 
   return (
     <>
@@ -104,6 +132,17 @@ export const App = () => {
         draggable
         pauseOnHover
         theme="dark"
+      />
+
+      <RoomListModal
+        setCurrentRoomId={setCurrentRoomId}
+        openRoomList={openRoomList}
+        onClose={handleRoomListModalClose}
+      />
+      <FriendListModal
+        currentRoomId={currentRoomId}
+        openFriendList={openFriendList}
+        onClose={handleFriendListModalClose}
       />
 
       <div className="main">
@@ -148,10 +187,10 @@ export const App = () => {
                 <>
                   <ChatRoom
                     roomId={currentRoomId}
-                    openRoomList={openRoomList}
-                    openFriendList={openFriendList}
-                    setOpenRoomList={setOpenRoomList}
-                    setOpenFriendList={setOpenFriendList}
+                    openRoomList={showRoomListButton}
+                    openFriendList={showFriendListButton}
+                    handleOpenRoomList={handleRoomListModalOpen}
+                    handleOpenFriendList={handleFriendListModalOpen}
                   />
                 </>
               )}
